@@ -85,6 +85,55 @@ through so the stock board still powers the motor and drives oscillation.
 
 ---
 
+## 2c. Wiring diagram (Option B)
+
+Signal-flow overview (exact pins/resistor values are in Tables A–C above).
+GitHub renders this diagram automatically.
+
+```mermaid
+flowchart LR
+    subgraph FAN["Fan — stock parts"]
+        PWR["Power board<br/>mains &rarr; 24 V"]
+        CTRL["Control board<br/>MCU + buttons"]
+        SW5["SW5 button<br/>(oscillation / 摇头)"]
+        DRV["In-motor driver<br/>FK-EGP00962 &rarr; motor"]
+        OSC["Osc motor<br/>TYJ50-8 (24 V~)"]
+    end
+
+    subgraph MOD["Added — 24 V isolated secondary only"]
+        FUSE["fuse 0.5 A"]
+        BUCK["buck 24&rarr;5 V<br/>(set 5.0 V)"]
+        ESP["ESP32-C3<br/>SuperMini"]
+        RC["RC filter<br/>10k + 1µF"]
+        R100["100 Ω"]
+        PD["10k pull-down<br/>&rarr; GND"]
+        OPTO["PC817 opto"]
+        R330["330 Ω"]
+    end
+
+    PWR -->|"+24 V / GND"| CTRL
+    CTRL ==>|"OSC-A / OSC-B (24 V AC)"| OSC
+
+    PWR -->|"+24 V"| FUSE
+    FUSE --> BUCK
+    BUCK -->|"5 V"| ESP
+    PWR -->|"GND (common)"| ESP
+
+    CTRL -->|"PWM (ctrl side, CUT)"| RC
+    RC -->|"GPIO3 (ADC)"| ESP
+    ESP -->|"GPIO4 (LEDC)"| R100
+    R100 -->|"PWM (motor side)"| DRV
+    R100 --> PD
+
+    ESP -->|"GPIO5"| R330
+    R330 --> OPTO
+    OPTO -->|"across SW5 contacts"| SW5
+```
+
+**Key:** the `PWM` wire is **cut** — the control-board side feeds the ESP's ADC
+(`GPIO3`) and the motor side is driven by the ESP (`GPIO4`). Everything on the
+"Added" side lives on the **isolated 24 V secondary**; never bridge mains.
+
 ## 3. ESPHome configuration
 
 > **Ready-to-flash file:** the canonical config (Option B, 3.3 V) is
