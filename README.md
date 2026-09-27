@@ -63,6 +63,7 @@ Full bill of materials: [BUILD_GUIDE.md §1](BUILD_GUIDE.md).
 ## Step-by-step
 
 ### Phase 1 — Bench the ESP (no fan, ~15 min)
+*(Breadboard is fine here — but it's bench-only; the final build must be soldered. See BUILD_GUIDE.md §2d.)*
 1. Install the **ESPHome** add-on in Home Assistant.
 2. Copy [`esphome/heran-fan.yaml`](esphome/heran-fan.yaml) into ESPHome, and copy
    [`esphome/secrets.yaml.example`](esphome/secrets.yaml.example) → `secrets.yaml`

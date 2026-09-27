@@ -136,6 +136,46 @@ flowchart LR
 (`GPIO3`) and the motor side is driven by the ESP (`GPIO4`). Everything on the
 "Added" side lives on the **isolated 24 V secondary**; never bridge mains.
 
+## 2d. Assembly — bench-test first, then make it permanent
+
+> ⚠️ **A breadboard is for bench testing only — never leave one inside the fan.**
+> Its spring contacts work loose with vibration and heat; a running fan will make
+> them go intermittent. Prototype on a breadboard, then rebuild it **soldered**.
+
+### Phase 1 — bench test (breadboard OK)
+- Power the ESP32-C3 over **USB** (no fan connected yet).
+- Hang the parts off the ESP with a **breadboard + Dupont jumpers**.
+- Goal: flash the config, confirm the **Fan** + **Toggle Oscillation** entities in
+  HA, meter-check that **GPIO4**'s average voltage rises with speed, and that
+  **GPIO5** pulses when you press Toggle Oscillation.
+- You can also test the mirror input by feeding **GPIO3** a known 0–3.3 V and
+  watching the **"Stock PWM (avg)"** sensor track it.
+
+### Phase 2 — permanent build (solder it)
+Two equally good styles for this small parts count:
+
+**A. Small perfboard (tidiest):**
+- Mount the ESP32-C3 on **female header sockets** (so you can pop it out to
+  reflash) — or solder it directly.
+- Solder the **PC817, resistors (330 / 100 / 10 kΩ×2), and the 1 µF cap** onto the
+  same perfboard; wire out to the **buck** and the fan's **CN2 / SW5** points.
+
+**B. Point-to-point (no board needed):**
+- Solder each resistor **inline in its wire** — 100 Ω in the GPIO4→PWM wire, 330 Ω
+  in the GPIO5→opto wire, the RC **10 kΩ + 1 µF** on the GPIO3 wire, and the 10 kΩ
+  **pull-down** at the motor-side PWM — and **heatshrink every joint**.
+
+**Connections to the fan (keep it reversible):**
+- Solder to the `CN2` wires / `SW5` pads, or — nicer — put a **JST/Dupont
+  connector at the CN2 interposition** so the module unplugs and the fan returns
+  to stock (Variant C1 reversibility).
+- **Heatshrink/Kapton every joint**, keep **one common ground**, and add a dab of
+  **hot glue for strain relief** so vibration can't crack a solder joint.
+- Optional: a **470–1000 µF** cap across the ESP `5V`/`GND` smooths Wi-Fi current
+  spikes.
+- Secure the module in the base with hot glue / foam tape; keep the ESP antenna
+  away from metal; leave USB reachable or rely on **OTA** for future updates.
+
 ## 3. ESPHome configuration
 
 > **Ready-to-flash file:** the canonical config (Option B, 3.3 V) is
