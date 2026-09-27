@@ -122,8 +122,10 @@ README.md            – this file
 BUILD_GUIDE.md       – bill of materials, wiring tables, test & safety
 HA_MOD_NOTES.md      – full teardown reverse-engineering + all measurements
 NOTES.md             – pcb_1 board inventory (control + power boards)
+CONTRIBUTING.md      – how to report results / submit changes
+LICENSE              – MIT (code); docs & photos CC BY 4.0
 esphome/
-  heran-fan.yaml     – ready-to-flash ESPHome config (Option B, 3.3 V)
+  heran-fan.yaml     – ready-to-flash ESPHome config (Option B)
   secrets.yaml.example
 esp32/               – ESP32-C3 SuperMini board photos + pinout notes
 pcb_1/               – control + power board photos
@@ -141,7 +143,8 @@ Reverse-engineering and measurements are **done** (see `HA_MOD_NOTES.md`):
 - Firmware: Option B config provided; **bench/hardware bring-up in progress**.
 
 Contributions welcome — if you have the same (or a similar) fan, PRs with your
-measurements, board photos, and tweaks are appreciated.
+measurements, board photos, and tweaks are appreciated. See
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 

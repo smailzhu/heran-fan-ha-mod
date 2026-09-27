@@ -22,7 +22,7 @@ the stock **SW5 (摇头)** button through an optocoupler (the stock board keeps
 generating the AC the synchronous oscillation motor needs).
 
 Measurements this relies on (multimeter DC averages — logic level/frequency still to confirm on your unit):
-- `CN2` pin1 `PWM` = **3.3 V logic**, active-high, off = 0 V. 12 speed levels,
+- `CN2` pin1 `PWM` = **logic-level (likely 3.3 V — unverified)**, active-high, off = 0 V. 12 speed levels,
   duty ≈ **24 % (L1, min-spin) → ~90 % (L12, max)**. Driver reads the PWM average.
 - `CN2` `GND` (pin2), `+24V` (pin3). `OSC-A/B` (pins 4/5) = ~24 V **AC** to the
   `TYJ50-8` synchronous oscillation motor — left to the stock board.
@@ -225,83 +225,21 @@ Two equally good styles for this small parts count:
 
 ## 3. ESPHome configuration
 
-> **Ready-to-flash file:** the canonical config (Option B, 3.3 V) is
-> [`esphome/heran-fan.yaml`](esphome/heran-fan.yaml) with
-> [`esphome/secrets.yaml.example`](esphome/secrets.yaml.example). The block below
-> is the simpler speed-only variant kept for reference.
+The **single source of truth is [`esphome/heran-fan.yaml`](esphome/heran-fan.yaml)**
+— Option B (PWM mirror + override, with a **Toggle Oscillation** button). Flash
+that file directly; don't hand-copy a config out of this guide.
 
-`secrets.yaml` (create alongside):
-```yaml
-wifi_ssid: "YOUR_SSID"
-wifi_password: "YOUR_WIFI_PASSWORD"
-api_key: "BASE64_32BYTE_KEY"     # generate in ESPHome ("Encryption key")
-```
+**Setup**
+1. Copy [`esphome/secrets.yaml.example`](esphome/secrets.yaml.example) to
+   **`secrets.yaml`** in your ESPHome config folder and fill in Wi-Fi, the API key,
+   and the fallback-AP password (generate the API key with the ESPHome "new device"
+   wizard or `openssl rand -base64 32`).
+2. **Calibrate** the substitutions at the top of the YAML: `adc_max_v` (the
+   "Stock PWM (avg)" reading at max speed), `min_duty`/`max_duty` (L1/L12 duty),
+   and `pwm_freq`. See Section 4.
 
-`heran-fan.yaml`:
-```yaml
-esphome:
-  name: heran-fan
-  friendly_name: Heran Fan
-
-esp32:
-  board: esp32-c3-devkitm-1
-  variant: esp32c3
-  framework:
-    type: esp-idf
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-api:
-  encryption:
-    key: !secret api_key
-ota:
-  platform: esphome
-logger:
-
-# ---------- SPEED: 3.3 V logic PWM into CN2 pin1 (motor side) ----------
-# The BLDC driver reads the PWM *average*, so exact frequency is not critical.
-output:
-  - platform: ledc
-    id: fan_pwm
-    pin: GPIO4
-    frequency: 10000Hz     # if the fan doesn't respond, try 1000/5000/20000 Hz
-    min_power: 0.24        # L1 duty ~24% = lowest speed that reliably spins
-    max_power: 0.90        # ~L12 duty ~90% = full speed (stock never exceeds)
-    zero_means_zero: true  # HA "off" -> 0% duty -> motor off (fail-safe on boot)
-
-fan:
-  - platform: speed
-    id: heran_fan
-    output: fan_pwm
-    name: "Fan"
-    speed_count: 100       # near-continuous; HA 1..100% -> 24..90% duty
-    # (set speed_count: 12 if you prefer to mirror the stock 12 levels)
-
-# ---------- OSCILLATION: momentary "tap" of SW5 via optocoupler ----------
-# Stock board still drives the TYJ50-8 AC motor; we just toggle its 摇头 button.
-# No feedback wire exists, so state is optimistic (each toggle = one button tap).
-switch:
-  - platform: gpio
-    id: sw5_line
-    pin: GPIO5
-    internal: true
-    restore_mode: ALWAYS_OFF
-
-  - platform: template
-    name: "Oscillation"
-    optimistic: true
-    turn_on_action:  { script.execute: tap_sw5 }
-    turn_off_action: { script.execute: tap_sw5 }
-
-script:
-  - id: tap_sw5
-    then:
-      - switch.turn_on: sw5_line
-      - delay: 180ms
-      - switch.turn_off: sw5_line
-```
+**Pins:** `GPIO4` = PWM out · `GPIO3` = mirror input (via RC filter) · `GPIO5`
+= oscillation tap.
 
 Speed → duty reference (for tuning / if you use `speed_count: 12`):
 
