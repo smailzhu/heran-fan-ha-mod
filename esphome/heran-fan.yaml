@@ -1,0 +1,130 @@
+# Heran / Hanny stand fan  ->  Home Assistant   (ESP32-C3 SuperMini)
+# =============================================================================
+# Design: "Option B" - PWM mirror + override.
+#   * Speed: the ESP sits in the middle of the motor PWM line. By default it
+#     MIRRORS the stock control board (so the physical buttons keep working),
+#     and OVERRIDES with the HA value when you set a speed. A physical button
+#     press hands control back to the panel automatically.
+#   * Oscillation: the stock board still drives the AC synchronous motor; the
+#     ESP just "taps" the 摇头 / SW5 button through an optocoupler.
+# Assumption: PWM is 3.3 V logic -> drive the ESP GPIO directly (no level shifter).
+# Wiring + how this was derived: see ../BUILD_GUIDE.md and ../HA_MOD_NOTES.md.
+# =============================================================================
+
+substitutions:
+  name: heran-fan
+  friendly_name: "Heran Fan"
+  # ---- tune these to YOUR measurements (see HA_MOD_NOTES.md Section 4) ----
+  min_duty: "0.24"      # L1 duty  = lowest speed that reliably spins
+  max_duty: "0.90"      # L12 duty = max speed
+  pwm_freq: "10000Hz"   # driver reads the PWM average; try 1000/5000/20000 if no response
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32-c3-devkitm-1
+  variant: esp32c3
+  framework:
+    type: esp-idf
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "${friendly_name} Setup"
+
+captive_portal:
+logger:
+api:
+  encryption:
+    key: !secret api_key
+ota:
+  platform: esphome
+
+globals:
+  - { id: ha_override, type: bool,  restore_value: no, initial_value: "false" }
+  - { id: ha_level,    type: float, restore_value: no, initial_value: "0" }
+  - { id: last_stock,  type: float, restore_value: no, initial_value: "0" }
+
+# ---- INPUT: control-board PWM (what the physical buttons set) ----------------
+# The stock "PWM" line is a toggling signal -> read its duty %.
+# If YOUR board outputs a steady analog voltage instead (no toggling), replace
+# this block with an `adc` sensor on GPIO3 and scale (volts / 3.3) to a fraction.
+sensor:
+  - platform: duty_cycle
+    pin: GPIO3
+    id: stock_duty
+    update_interval: 100ms
+    filters:
+      - median: { window_size: 3, send_every: 1 }
+
+# ---- OUTPUT: PWM to the motor driver ----------------------------------------
+output:
+  - platform: ledc
+    id: fan_pwm
+    pin: GPIO4
+    frequency: ${pwm_freq}
+    min_power: 0.0
+    max_power: 1.0
+    zero_means_zero: true
+  # dummy sink so the fan entity has an output to bind to (we drive fan_pwm ourselves)
+  - platform: template
+    id: fan_sink
+    type: float
+    write_action:
+      - lambda: |-
+          // no-op: the real PWM is driven by the interval lambda below
+
+fan:
+  - platform: speed
+    id: heran_fan
+    output: fan_sink
+    name: "Fan"
+    speed_count: 100
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - lambda: 'id(ha_override) = true; id(ha_level) = id(heran_fan).speed / 100.0f;'
+    on_speed_set:
+      - lambda: 'id(ha_override) = true; id(ha_level) = id(heran_fan).speed / 100.0f;'
+    on_turn_off:
+      - lambda: 'id(ha_override) = true; id(ha_level) = 0.0f;'
+
+# ---- decide motor PWM every 100 ms: mirror the panel, or HA override ---------
+interval:
+  - interval: 100ms
+    then:
+      - lambda: |-
+          float stock = id(stock_duty).has_state() ? id(stock_duty).state / 100.0f : 0.0f;
+          // a physical button press changes the stock duty -> return control to the panel
+          if (fabsf(stock - id(last_stock)) > 0.05f) { id(ha_override) = false; }
+          id(last_stock) = stock;
+          float out;
+          if (id(ha_override)) {
+            float l = id(ha_level);                                   // 0..1 from HA
+            out = (l <= 0.0f) ? 0.0f : (${min_duty} + l * (${max_duty} - ${min_duty}));
+          } else {
+            out = stock;                                              // mirror the panel exactly
+          }
+          id(fan_pwm)->set_level(out);
+
+# ---- OSCILLATION: momentary "tap" of the stock 摇头 / SW5 button -------------
+switch:
+  - platform: gpio
+    id: sw5_line
+    pin: GPIO5
+    internal: true
+    restore_mode: ALWAYS_OFF
+  - platform: template
+    name: "Oscillation"
+    optimistic: true
+    turn_on_action:  { script.execute: tap_sw5 }
+    turn_off_action: { script.execute: tap_sw5 }
+
+script:
+  - id: tap_sw5
+    then:
+      - switch.turn_on: sw5_line
+      - delay: 180ms
+      - switch.turn_off: sw5_line

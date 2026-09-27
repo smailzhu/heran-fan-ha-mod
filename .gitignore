@@ -1,0 +1,9 @@
+# ESPHome secrets & build artifacts
+esphome/secrets.yaml
+secrets.yaml
+.esphome/
+esphome/.esphome/
+
+# OS junk
+.DS_Store
+Thumbs.db
