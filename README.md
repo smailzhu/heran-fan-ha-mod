@@ -2,11 +2,17 @@
 
 Make a cheap **Hanny / Heran DC stand fan** smart — a real Home Assistant `fan`
 entity with **continuously variable speed** and **oscillation**, while the
-**physical buttons keep working exactly as before**.
+**physical buttons still working** (a design goal — see the status note below).
 
 This is done with a small **ESP32-C3** that taps into the fan's internal
 low‑voltage control bus. No cloud, no app — local ESPHome + Home Assistant.
 
+> 🚧 **Status — work in progress, NOT yet hardware-tested.** The teardown,
+> measurements, and firmware are complete on paper, but nothing has been
+> bench/hardware-validated yet. In particular the **PWM logic level (3.3 vs 5 V)
+> and frequency are unverified** — you must measure them on your own fan before
+> wiring. Treat every value here as a starting point, not a proven fact.
+>
 > ⚠️ **Safety:** the fan's power board is mains-powered. This mod only touches the
 > **isolated 24 V secondary** side — **never** the mains/SMPS primary. If you are
 > not comfortable working safely inside a mains appliance, don't. You do this at
@@ -17,7 +23,7 @@ low‑voltage control bus. No cloud, no app — local ESPHome + Home Assistant.
 ## Will this work for my fan?
 
 This was reverse-engineered from a **Hanny (www.hanny.com.cn)** DC stand fan.
-Yours is very likely the same platform if, on teardown, you find these markings
+Yours is likely the same platform if, on teardown, you find these markings
 (photos are in [`pcb_1/`](pcb_1/) and [`pcb_2/`](pcb_2/)):
 
 - Control/display board: **`KB-3151C`**, **`FY-HG-FLD35-16BR`**
@@ -33,7 +39,8 @@ board for the AC oscillation motor) transfers to most similar DC fans.
 
 ## How it works (the short version)
 
-The fan has 3 PCBs. The control board sends the motor a **3.3 V logic PWM** speed
+The fan has 3 PCBs. The control board sends the motor a **logic-level PWM** (likely
+3.3 V — unverified) speed
 command on `CN2` and drives a **24 V AC synchronous** oscillation motor on
 `OSC-A/OSC-B`. So:
 
@@ -55,6 +62,7 @@ Wiring + parts: **[BUILD_GUIDE.md](BUILD_GUIDE.md)**.
 - 1× PC817 optocoupler; resistors 330 Ω, 100 Ω, 2× 10 kΩ; 1× 1 µF capacitor; 0.5 A inline fuse; wire
 - *(optional insurance)* a BSS138 level shifter — only if PWM turns out to be 5 V
 - Home Assistant with the ESPHome add-on
+- A **multimeter** (ideally with **Hz/duty** mode) to verify the PWM before wiring
 
 Full bill of materials: [BUILD_GUIDE.md §1](BUILD_GUIDE.md).
 
@@ -139,7 +147,13 @@ measurements, board photos, and tweaks are appreciated.
 
 ## License & disclaimer
 
-Released under the **MIT License** (see [LICENSE](LICENSE)).
+**Code** (the ESPHome YAML) is released under the **MIT License** (see
+[LICENSE](LICENSE)). **Documentation and photos** are © the contributors and
+licensed **CC BY 4.0**.
+
+*This is an independent, unofficial project — not affiliated with, authorized by,
+or endorsed by Hanny/Heran. Brand names and board markings are referenced only to
+identify the appliance.*
 
 **Disclaimer:** This project involves opening and modifying a mains-powered
 appliance. It is provided **as-is, with no warranty**. Mains electricity and

@@ -23,8 +23,8 @@ Photos of the ESP32 board on hand for the fan mod (see `../BUILD_GUIDE.md`).
 |--------|-----|-------|
 | Speed **PWM** out → CN2 PWM (motor side) | **GPIO4** | LEDC PWM, 3.3 V |
 | **Oscillation** → optocoupler across SW5 | **GPIO5** | momentary tap |
-| *(Option B)* control-board PWM in (mirror/override) | **GPIO6** | `duty_cycle` input |
-| *(optional)* extra button injections | GPIO7, GPIO10, GPIO3 | if doing Option A |
+| *(Option B)* control-board PWM in (mirror/override) | **GPIO3** | RC low-pass → ADC |
+| *(optional)* extra button injections | GPIO7, GPIO10 | if doing Option A |
 
 All chosen pins are broken out on this board and are safe (non-strapping).
 

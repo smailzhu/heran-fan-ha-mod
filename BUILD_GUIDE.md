@@ -1,15 +1,27 @@
 # Heran/Hanny Fan → Home Assistant — Build Guide (ESP32-C3)
 
-Ready-to-build package for the **hybrid** control design derived from the teardown
-+ multimeter measurements. See `NOTES.md`, `pcb_2/NOTES.md`, `HA_MOD_NOTES.md` for
+> 🚧 **Status: work in progress — not yet hardware-tested.** Values below come
+> from multimeter DC-average readings; the **PWM logic level (3.3 vs 5 V) and
+> frequency are unverified**. **Before wiring:** identify your board/harness,
+> confirm mains↔secondary isolation, and measure the actual PWM high level and
+> waveform (Section 4 / `HA_MOD_NOTES.md`). A series resistor is not overvoltage
+> protection.
+
+Build notes for the **hybrid** control design derived from the teardown +
+multimeter measurements. See `NOTES.md`, `pcb_2/NOTES.md`, `HA_MOD_NOTES.md` for
 the reverse-engineering behind it.
 
+**Contents:** §1 BOM · §2 wiring tables · §2b PWM break-out · §2c diagram ·
+§2d assembly · §3 ESPHome · §4 flash/calibrate/test · §5 safety · §5b physical
+buttons · §6 optional.
+
 **Design in one line:** ESP32-C3 takes over **speed** by driving the motor
-driver's 3.3 V logic **PWM** directly, and controls **oscillation** by "tapping"
+driver's **logic-level PWM** (likely 3.3 V — **verify first**), and controls
+**oscillation** by "tapping"
 the stock **SW5 (摇头)** button through an optocoupler (the stock board keeps
 generating the AC the synchronous oscillation motor needs).
 
-Measured facts this relies on:
+Measurements this relies on (multimeter DC averages — logic level/frequency still to confirm on your unit):
 - `CN2` pin1 `PWM` = **3.3 V logic**, active-high, off = 0 V. 12 speed levels,
   duty ≈ **24 % (L1, min-spin) → ~90 % (L12, max)**. Driver reads the PWM average.
 - `CN2` `GND` (pin2), `+24V` (pin3). `OSC-A/B` (pins 4/5) = ~24 V **AC** to the
@@ -31,7 +43,10 @@ Measured facts this relies on:
 | 8 | **Fuse 0.5 A** + inline holder | on the +24 V tap |
 | 9 | Hook-up wire, heatshrink, JST/Dupont | to interpose on `CN2` |
 | 10 | *(optional)* **BSS138 level-shifter** + 2× **10 kΩ** (divider) | only if the PWM turns out to be 5 V |
-| 11 | *(optional)* 5-pin JST male+female | clean inline interposer for `CN2` |
+| 11 | *(optional)* 5-pin JST male+female **matching CN2** | reversible inline interposer (see §2b) |
+
+**Tools:** multimeter (ideally Hz/duty), soldering iron, wire strippers, heatshrink;
+for the reversible interposer, a JST housing/pitch that matches your `CN2`.
 
 ---
 
@@ -65,7 +80,8 @@ through so the stock board still powers the motor and drives oscillation.
 | 3 (emitter) | SW5 pad on the **GND side** |
 | 4 (collector) | SW5 pad on the **MCU-input side** |
 
-> **Find SW5 polarity first:** with the fan off, meter in DC-V, find which SW5 pad
+> **Find SW5 polarity first:** with the fan **powered (plugged in, in standby)**,
+> meter in DC-V, find which SW5 pad
 > sits at a positive voltage (pulled up to the MCU) and which is 0 V (GND). Put the
 > PC817 **collector on the pulled-up pad**, **emitter on the GND pad**. If the tap
 > doesn't work, swap pins 3/4.
@@ -292,23 +308,46 @@ Speed → duty reference (for tuning / if you use `speed_count: 12`):
 
 ---
 
-## 4. First power-up test (do in this order)
+## 4. Flash, calibrate, and test (do in this order)
 
-1. **Bench the ESP first (no fan):** flash `heran-fan.yaml`, confirm it joins Wi-Fi
-   and appears in Home Assistant. Meter on GPIO4→GND: HA off = 0 V; raising speed
-   raises the average voltage. 
-2. **Set the buck to 5.0 V** with a meter **before** connecting it to the ESP.
-3. **Fan off**, do the wiring (Tables A–C). Double-check: one common GND; `+24V`
-   goes through the **fuse** to the buck; the cut **control-side PWM** is insulated.
-4. **Power on.** ESP boots → motor stays **off** (0 % duty). 
-5. **Speed:** set HA to ~30 % → fan spins slowly; increase → faster.
-   - *No response?* Try `frequency: 1000Hz` / `5000Hz` / `20000Hz`. Still nothing →
-     PWM input may be 5 V logic: insert the **BSS138 level-shifter** on GPIO4→PWM.
-6. **Oscillation:** toggle the **Oscillation** switch → head starts swinging;
-   toggle again → stops. If nothing, swap PC817 pins 3/4 (polarity).
-7. **Fail-safe check:** reboot the ESP → motor must go to **off**.
+> These steps are for the canonical **Option B** config
+> (`esphome/heran-fan.yaml`), which boots in **mirror mode** (the fan follows the
+> physical panel) and exposes a **"Toggle Oscillation" button**.
 
----
+**Flash (bench, no fan):**
+1. In Home Assistant's **ESPHome** add-on, create a device and paste
+   `esphome/heran-fan.yaml`. Copy `esphome/secrets.yaml.example` to **`secrets.yaml`
+   in the same ESPHome config folder** and fill in Wi-Fi + keys. Generate the
+   API/OTA key with the ESPHome "new device" wizard or `openssl rand -base64 32`.
+2. Plug the ESP32-C3 in over **USB-C** and flash. If it isn't detected: **hold
+   BOOT, tap RST, release BOOT**, then flash. Confirm a **Fan** entity and a
+   **Toggle Oscillation** button appear in HA.
+3. Meter on **GPIO4→GND**: HA off = 0 V; raising the HA speed raises the average
+   voltage. Press **Toggle Oscillation** → **GPIO5** pulses briefly.
+
+**Wire (fan unplugged):**
+4. Set the buck to **5.0 V** (meter) **before** connecting it to the ESP.
+5. Do the wiring (Tables A–C + §5b). Double-check: one common GND; the **fuse** on
+   +24 V; the **10 kΩ pull-down** on the motor-side PWM; and the cut control-side
+   PWM going through the **RC filter → GPIO3**.
+
+**Calibrate (fan powered):**
+6. Power on. In HA, watch the **"Stock PWM (avg)"** sensor, set the fan to **max
+   (L12)** with the physical button, read that voltage, and put it in the
+   `adc_max_v:` substitution; re-flash. (Tune `min_duty`/`max_duty` similarly.)
+
+**Test:**
+7. **Mirror:** with no HA command, the fan follows the physical panel.
+8. **Speed:** set a speed in HA → the motor follows (override). Press the physical
+   风速 button → control returns to the panel.
+   - *No response?* Try `pwm_freq: 1000Hz`/`5000Hz`/`20000Hz`. Still nothing → the
+     PWM input may be 5 V: add proper level translation on GPIO4→PWM (a series
+     resistor is **not** protection).
+9. **Oscillation:** press **Toggle Oscillation** → head swings; press again →
+   stops. If nothing, swap PC817 pins 3/4 (polarity).
+10. **Fail-safe:** reboot the ESP → the fan follows the panel (motor off if the
+    panel is off); confirm the motor-side pull-down holds the driver off while the
+    ESP boots.
 
 ## 5. Safety
 

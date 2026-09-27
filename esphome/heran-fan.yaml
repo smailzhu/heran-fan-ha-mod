@@ -47,6 +47,7 @@ wifi:
   password: !secret wifi_password
   ap:
     ssid: "${friendly_name} Setup"
+    password: !secret ap_password
 
 captive_portal:
 logger:

@@ -244,8 +244,8 @@ averages alone: **3.3 V logic** ⇒ L12 ≈ 88% duty (most likely), or **5 V log
 | L2    | 0.989   | 30%  | L9    | 2.12    | 64%  |
 | L3    | 1.255   | 38%  | L10   | 2.23    | 68%  |
 | L4    | 1.474   | 45%  | L11   | 2.64    | 80%  |
-| L5    | 1.555   | 47%  | L12   | 2.98    | 90%  |
-| L6    | 1.70    | 52%  | L13   | ~3.2 (confirm) | ~100% |
+| L5    | 1.555   | 47%  | **L12 (max)** | 2.98 / 2.91 conn | ~88% |
+| L6    | 1.70    | 52%  |       |         |      |
 
 - **`+24V` rail:** measured **~23.8 V** (CN2 pin 3 → GND). ✅ ~24 V.
 - **PWM frequency:** still unknown (meter gives duty via average, not freq). Pick
