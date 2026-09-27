@@ -21,15 +21,17 @@ Measured facts this relies on:
 
 | # | Part | Notes |
 |---|------|-------|
-| 1 | **ESP32-C3** dev board | you have one; only 2 GPIOs used |
+| 1 | **ESP32-C3** dev board | 3 GPIOs used: GPIO3 (in), GPIO4 (PWM out), GPIO5 (osc) |
 | 2 | **Buck converter 24 V→5 V** (MP1584 / "mini-360") | set output to **5.0 V** before use |
 | 3 | **Optocoupler PC817** (×1) | to tap SW5 |
-| 4 | Resistor **330 Ω** | PC817 LED (from GPIO5) |
-| 5 | Resistor **100 Ω** | series in the PWM line (optional, tames edges) |
-| 6 | **Fuse 0.5 A** + inline holder | on the +24 V tap |
-| 7 | Hook-up wire, heatshrink, JST/Dupont | to interpose on `CN2` |
-| 8 | *(optional)* **BSS138 level-shifter** module | insurance if PWM turns out 5 V |
-| 9 | *(optional)* 5-pin JST male+female | clean inline interposer for `CN2` |
+| 4 | Resistor **330 Ω** (×1) | PC817 LED (from GPIO5) |
+| 5 | Resistor **100 Ω** (×1) | series in the motor-side PWM line (tames edges) |
+| 6 | Resistor **10 kΩ** (×2) | **RC-filter series** (GPIO3 input) + **motor-side PWM pull-down** to GND |
+| 7 | Capacitor **1 µF** (×1) | RC low-pass to GND on the GPIO3 input (with the 10 kΩ above) |
+| 8 | **Fuse 0.5 A** + inline holder | on the +24 V tap |
+| 9 | Hook-up wire, heatshrink, JST/Dupont | to interpose on `CN2` |
+| 10 | *(optional)* **BSS138 level-shifter** + 2× **10 kΩ** (divider) | only if the PWM turns out to be 5 V |
+| 11 | *(optional)* 5-pin JST male+female | clean inline interposer for `CN2` |
 
 ---
 
