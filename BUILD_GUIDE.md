@@ -87,6 +87,29 @@ through so the stock board still powers the motor and drives oscillation.
 
 ---
 
+## 2b. Breaking out just the PWM wire (cut vs. reversible interposer)
+
+Only the **PWM** wire is interrupted; `GND`, `+24V`, `OSC-A`, `OSC-B` stay
+connected. **Verify which wire is PWM first** — meter in continuity to the `CN2`
+PWM pad (pin 1); don't trust wire colour. Never cut `+24V`/`GND` — *tap* them
+(solder a branch or back-probe) for the buck and common ground.
+
+**Method 1 — cut the PWM wire (simplest, not easily reversible).**
+Cut only the PWM wire mid-span. Control-board side → RC (10 kΩ + 1 µF) → GPIO3;
+motor side → 100 Ω → GPIO4 (+ 10 kΩ pull-down to GND). Heatshrink both joints.
+
+**Method 2 — sacrificial JST extension (recommended, fully reversible).**
+Buy a matching 5-pin JST male↔female extension and cut the **PWM wire on the
+extension, not on the fan**. Plug it inline: control-board `CN2` header →
+extension → fan's original harness. The 4 other wires pass straight through; only
+PWM breaks out to your board. To restore stock, just remove the extension — the
+fan's wiring is never touched (Variant C1 reversibility).
+
+**Method 3 — depin the connector (advanced).**
+Release the PWM crimp pin from the `CN2` housing (lift the lock tab, slide the
+pin out) and insert a new crimped pin from GPIO4 in its place. Reversible but
+needs a depin tool + crimp skills; Method 2 is easier.
+
 ## 2c. Wiring diagram (Option B)
 
 Signal-flow overview (exact pins/resistor values are in Tables A–C above).
