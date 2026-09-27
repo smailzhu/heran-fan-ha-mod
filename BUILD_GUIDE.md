@@ -76,8 +76,8 @@ through so the stock board still powers the motor and drives oscillation.
                                     │  SW5 (摇头) pads ──[PC817 3/4]
                                     │                        ▲
                            CN2 harness (to motor)            │ opto
-   pin1 PWM ─✂─ (ctrl side open)                             │
-        motor-side PWM ──100Ω──► GPIO4                       │
+   pin1 PWM ─✂─ ctrl side ──[RC 10kΩ+1µF]──► GPIO3 (ADC)     │
+        motor side ──100Ω──► GPIO4 ;  motor side ──10kΩ──► GND │
    pin2 GND ───────────────┬──► ESP GND ──────[PC817 2]──────┘
    pin3 +24V ──[fuse]──► [24V→5V buck] ──5V──► ESP 5V
    pin4 OSC-A ─────────► (through to TYJ50-8, stock-driven)

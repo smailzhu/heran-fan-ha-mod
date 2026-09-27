@@ -52,7 +52,7 @@ Wiring + parts: **[BUILD_GUIDE.md](BUILD_GUIDE.md)**.
 
 - ESP32-C3 (this repo uses an **ESP32-C3 SuperMini**, see [`esp32/`](esp32/))
 - 24 V→5 V buck converter (MP1584 / "mini-360")
-- 1× PC817 optocoupler, 330 Ω + 100 Ω resistors, a 0.5 A inline fuse, wire
+- 1× PC817 optocoupler; resistors 330 Ω, 100 Ω, 2× 10 kΩ; 1× 1 µF capacitor; 0.5 A inline fuse; wire
 - *(optional insurance)* a BSS138 level shifter — only if PWM turns out to be 5 V
 - Home Assistant with the ESPHome add-on
 
