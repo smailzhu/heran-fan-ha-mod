@@ -69,16 +69,18 @@ Full bill of materials: [BUILD_GUIDE.md §1](BUILD_GUIDE.md).
    and fill in your Wi-Fi + API key.
 3. **Flash over USB-C.** If the SuperMini isn't detected on the first flash:
    **hold BOOT, tap RST, release BOOT**, then flash.
-4. Confirm a **"Fan"** entity and an **"Oscillation"** switch appear in HA.
+4. Confirm a **"Fan"** entity and a **"Toggle Oscillation"** button appear in HA.
 5. **Verify outputs with a multimeter (still no fan):** meter on **GPIO4 → GND**,
    raise the HA speed → the average voltage should climb (~0.8 V → ~3.0 V).
-   Toggling Oscillation should briefly pulse **GPIO5**.
+   Pressing "Toggle Oscillation" should briefly pulse **GPIO5**.
 
 ### Phase 2 — Wire into the fan (power OFF)
 6. Open the fan base/head; find the **`CN2`** harness (`PWM/GND/+24V/OSC-A/OSC-B`).
 7. Follow **[BUILD_GUIDE.md](BUILD_GUIDE.md)** Tables A–C + §5b (Option B):
-   - **Cut** the `PWM` wire. Motor side → **GPIO4**. Control-board side → **GPIO3**
-     (the mirror/override input). *(Start with a direct 3.3 V connection.)*
+   - **Cut** the `PWM` wire. Motor side → **GPIO4** (+ ~10 kΩ pull-down to GND);
+     control-board side → **RC low-pass (10 kΩ+1 µF) → GPIO3** (mirror input).
+     ⚠️ First confirm the PWM's real high level ≤ 3.3 V (Section 4 of the notes);
+     if it's 5 V, add proper level translation — a series resistor is not enough.
    - `GND` common to the ESP; `+24V` → **fuse** → **buck** → set buck to **5.0 V**
      → ESP `5V` pin.
    - `OSC-A/OSC-B` pass through untouched.
@@ -90,7 +92,8 @@ Full bill of materials: [BUILD_GUIDE.md §1](BUILD_GUIDE.md).
 9. Power on. The ESP boots in **mirror** mode → the fan obeys the **physical panel**.
 10. **Speed:** set a speed in HA → the motor follows (override). Press the physical
     **风速** button → control returns to the panel. 
-11. **Oscillation:** toggle the HA switch → head swings; toggle again → stops.
+11. **Oscillation:** press the **Toggle Oscillation** button → head swings;
+    press again → stops.
     (If nothing, swap PC817 pins 3/4 — polarity.)
 12. **Fail-safe:** reboot the ESP → the fan should follow the panel (motor off if
     the panel is off).
@@ -123,7 +126,8 @@ pcb_2/               – fan-head motor driver + motor photos
 ## Status
 
 Reverse-engineering and measurements are **done** (see `HA_MOD_NOTES.md`):
-- PWM: 3.3 V logic (working assumption), active-high, 12 levels, ~24%→90% duty.
+- PWM: active-high, 12 levels, ~24%→90% duty. **Logic level (3.3 vs 5 V) and
+  frequency still to be confirmed on a scope/Hz meter before wiring.**
 - Oscillation: `TYJ50-8` AC synchronous, symmetric ~50/60 Hz (~16.5 V), reused via SW5.
 - Firmware: Option B config provided; **bench/hardware bring-up in progress**.
 

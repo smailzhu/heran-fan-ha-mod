@@ -222,6 +222,13 @@ logic-bus interpretation is proven.
 
 Record results in the tables below once measured.
 
+>
+> ⚠️ **Not yet proven:** these are **DC averages**, which a 3.3 V PWM, a 5 V PWM,
+> **or a steady analog voltage** could all produce. The 3.3 V-logic reading below
+> is the *likely* interpretation, **not confirmed**. Measure the **actual high
+> level, frequency, and waveform** (Hz meter / scope) before wiring GPIO3/GPIO4.
+> A series resistor is **not** overvoltage protection.
+
 **Speed — `PWM` (logic), measured 2026-09-27 (DC avg, PWM→GND, motor unplugged):**
 
 Fan has **12 speed levels** (no L13; **L12 is max**). `off` = **0 V** ⇒ PWM idles

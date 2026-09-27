@@ -41,7 +41,7 @@ through so the stock board still powers the motor and drives oscillation.
 ### Table A — CN2 harness (control board ↔ motor assembly)
 | CN2 pin | Signal | What to do |
 |--------:|--------|------------|
-| 1 | `PWM` | **CUT.** Motor-side → **ESP GPIO4** (via 100 Ω). Control-board side → insulate & leave open. |
+| 1 | `PWM` | **CUT.** Motor-side → **ESP GPIO4** (via 100 Ω) **+ ~10 kΩ pull-down to GND**. Control-board side → **RC low-pass → GPIO3** (Option B) or insulate (speed-only). |
 | 2 | `GND` | Keep through. Also tie to **ESP GND** and **buck GND** (one common ground). |
 | 3 | `+24V` | Keep through. Also tap → **fuse** → **buck +IN**. |
 | 4 | `OSC-A` | **Pass through untouched** (stock board drives oscillation). |
@@ -202,7 +202,11 @@ Speed → duty reference (for tuning / if you use `speed_count: 12`):
   mains/SMPS primary. Keep the power board in its housing.
 - **Fuse** the +24 V tap (0.5 A). Verify buck = 5.0 V before wiring to the ESP.
 - Insulate the cut **control-side PWM** wire so it can't short.
-- `zero_means_zero: true` guarantees motor-off on boot/reset/Wi-Fi loss.
+- **Fail-safe:** `zero_means_zero: true` only holds the output low *while the
+  firmware runs*. During **boot/reset or loss of ESP power, GPIO4 is high-impedance**,
+  so add a **~10 kΩ pull-down from the motor-side PWM to GND** so the driver sees
+  LOW (motor off) then. On **Wi-Fi loss** the last commanded speed simply persists
+  (the fan keeps running) — verify that is acceptable for you.
 - Reassemble with proper strain relief; don't pinch wires near the blade or gears.
 
 ---
@@ -224,75 +228,37 @@ like Table C but across `SW1..SW5`). Physical buttons and HA both work.
   GPIO6=SW4, GPIO7=SW5). Speed becomes step-up/step-down buttons in HA.
 
 ### Option B — PWM mirror + override (physical buttons *and* continuous HA speed)
-Keep the interposer, but feed the **control-board-side PWM into an ESP input**
-instead of leaving it open. The ESP mirrors it to the motor by default (physical
-buttons work + ESP knows the exact speed), and overrides it when HA sets a speed.
+Keep the interposer, but feed the **control-board-side PWM into an ESP input** so
+the ESP can mirror the panel and know the current speed. **The ready-to-flash
+implementation is [`esphome/heran-fan.yaml`](esphome/heran-fan.yaml)** — use it
+rather than the reference stub in Section 3.
 
-Extra wiring vs. Table A/B:
-| From | To |
-|------|----|
-| `CN2` `PWM` **control-board side** | ESP `GPIO6` (via ~1 kΩ series; it's 3.3 V logic) |
-| ESP `GPIO4` | motor-side `PWM` (unchanged, the override output) |
+Extra wiring vs. Tables A/B:
 
-ESPHome skeleton (replace the `output:`/`fan:` speed block):
-```yaml
-sensor:
-  - platform: duty_cycle
-    pin: GPIO6                 # control-board PWM (what the physical buttons set)
-    id: stock_duty
-    update_interval: 200ms
+| From | Through | To |
+|------|---------|----|
+| `CN2` `PWM` **control-board side** | **RC low-pass: ~10 kΩ series + 1 µF to GND** (+ a resistor divider if the signal is >3.3 V) | ESP **GPIO3** (ADC) |
+| `CN2` `PWM` **motor side** | **~10 kΩ pull-down to GND** (fail-safe when the ESP is off/resetting) | ESP **GPIO4** (LEDC out) |
 
-globals:
-  - id: ha_override
-    type: bool
-    restore_value: no
-    initial_value: "false"
-  - id: ha_level
-    type: float
-    restore_value: no
-    initial_value: "0"
-  - id: last_stock
-    type: float
-    restore_value: no
-    initial_value: "0"
+Why ADC (not `duty_cycle`): a 10–20 kHz PWM would fire tens of thousands of edge
+interrupts/sec. The RC low-pass turns the stock PWM into a **steady average
+voltage** the ADC reads cheaply — and it also works if the stock output is
+analog rather than PWM.
 
-output:
-  - platform: ledc
-    id: fan_pwm
-    pin: GPIO4
-    frequency: 10000Hz
-    min_power: 0.0
-    max_power: 1.0
-    zero_means_zero: true
+**Calibrate:** flash the config, watch the **"Stock PWM (avg)"** sensor, set the
+fan to **max (L12)**, and copy that voltage into the `adc_max_v:` substitution.
+Tune `handback_delta`, `min_duty`, `max_duty` to your readings.
 
-fan:
-  - platform: speed
-    id: heran_fan
-    output: fan_pwm
-    name: "Fan"
-    speed_count: 100
-    on_speed_set:                      # HA changed speed -> take override
-      - lambda: |-
-          id(ha_override) = true;
-          id(ha_level) = x / 100.0;    # 0..1
+> ⚠️ **Before connecting GPIO3/GPIO4:** confirm the stock PWM's **actual high
+> level ≤ 3.3 V** and that it is a real PWM (Section 4). A series resistor is
+> **not** overvoltage protection — if it's 5 V, add real level translation
+> (verified for your signal), and size the divider so the ADC never exceeds ~3 V.
 
-interval:
-  - interval: 200ms
-    then:
-      - lambda: |-
-          float stock = id(stock_duty).state / 100.0;      // 0..1
-          // a physical button press changes the stock duty -> hand control back
-          if (fabs(stock - id(last_stock)) > 0.05) { id(ha_override) = false; }
-          id(last_stock) = stock;
-          float out = id(ha_override) ? id(ha_level) : stock;
-          // clamp to the fan's real range; 0 = off
-          if (out > 0.0f && out < 0.24f) out = 0.24f;
-          if (out > 0.90f) out = 0.90f;
-          id(fan_pwm).set_level(out);
-```
-Notes: tune the `0.05` threshold and the 0.24/0.90 clamps to your readings; if the
-`duty_cycle` sensor is noisy, add a small `filters: [ median ]`. Oscillation stays
-exactly as in Section 3 (SW5 tap; the physical SW5 also still works).
+Oscillation is unchanged (SW5 tap). In the canonical config it is exposed as a
+**"Toggle Oscillation" button** (a momentary tap; there is no stock state
+feedback, so an on/off *switch* would drift out of sync). The physical SW5 button
+also keeps working. *(Optional true feedback: sense "AC present" on OSC-A/OSC-B
+via an optocoupler into a `binary_sensor` and build a real switch from it.)*
 
 ## 6. Optional upgrades
 - **True oscillation state:** if the panel has an oscillation indicator LED, sense

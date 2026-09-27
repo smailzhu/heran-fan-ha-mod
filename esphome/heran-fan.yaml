@@ -1,23 +1,36 @@
 # Heran / Hanny stand fan  ->  Home Assistant   (ESP32-C3 SuperMini)
 # =============================================================================
 # Design: "Option B" - PWM mirror + override.
-#   * Speed: the ESP sits in the middle of the motor PWM line. By default it
-#     MIRRORS the stock control board (so the physical buttons keep working),
-#     and OVERRIDES with the HA value when you set a speed. A physical button
-#     press hands control back to the panel automatically.
-#   * Oscillation: the stock board still drives the AC synchronous motor; the
-#     ESP just "taps" the 摇头 / SW5 button through an optocoupler.
-# Assumption: PWM is 3.3 V logic -> drive the ESP GPIO directly (no level shifter).
-# Wiring + how this was derived: see ../BUILD_GUIDE.md and ../HA_MOD_NOTES.md.
+#   * Speed: the ESP sits in the middle of the motor PWM line. It reads the stock
+#     control board's PWM as an ANALOG AVERAGE (RC low-pass -> ADC on GPIO3),
+#     MIRRORS it to the motor (physical buttons keep working), and OVERRIDES with
+#     the HA value when you set a speed. A physical button press (stock level
+#     change) hands control back to the panel. The mirrored/overridden speed is
+#     published back to HA so the entity is not stale.
+#   * Oscillation: the stock board still drives the AC synchronous motor; the ESP
+#     just momentarily "taps" the 摇头 / SW5 button through an optocoupler. It is a
+#     TOGGLE (no absolute state feedback) -> exposed as a button, not a switch.
+#
+# !! BEFORE WIRING, VERIFY (see HA_MOD_NOTES.md Section 4):
+#   - the stock PWM's ACTUAL high level and that it is a real PWM (not analog).
+#     DC averages alone do NOT prove 3.3 V. If it is 5 V, add proper level
+#     translation (a series resistor is NOT protection). If it is a steady analog
+#     voltage, the RC+ADC input below still works.
+#   - Add a ~10 k pull-down from the MOTOR-side PWM to GND so the driver sees LOW
+#     (motor off) whenever the ESP is unpowered/resetting (GPIO4 is hi-Z then).
+# Wiring + derivation: see ../BUILD_GUIDE.md and ../HA_MOD_NOTES.md.
 # =============================================================================
 
 substitutions:
   name: heran-fan
   friendly_name: "Heran Fan"
-  # ---- tune these to YOUR measurements (see HA_MOD_NOTES.md Section 4) ----
-  min_duty: "0.24"      # L1 duty  = lowest speed that reliably spins
-  max_duty: "0.90"      # L12 duty = max speed
-  pwm_freq: "10000Hz"   # driver reads the PWM average; try 1000/5000/20000 if no response
+  # ---- CALIBRATE to YOUR measurements (see HA_MOD_NOTES.md Section 4) ----
+  min_duty: "0.24"        # L1 duty  = lowest speed that reliably spins
+  max_duty: "0.90"        # L12 duty = max speed
+  pwm_freq: "10000Hz"     # driver reads the PWM average; try 1000/5000/20000 if no response
+  adc_max_v: "2.90"       # ADC volts read at MAX stock speed (L12) after the RC filter.
+                          #   Read the "Stock PWM (avg)" sensor at L12 and put it here.
+  handback_delta: "0.03"  # stock-duty change that hands control back to the panel
 
 esphome:
   name: ${name}
@@ -45,20 +58,27 @@ ota:
 
 globals:
   - { id: ha_override, type: bool,  restore_value: no, initial_value: "false" }
-  - { id: ha_level,    type: float, restore_value: no, initial_value: "0" }
-  - { id: last_stock,  type: float, restore_value: no, initial_value: "0" }
+  - { id: ha_level,    type: float, restore_value: no, initial_value: "0" }   # 0..1 (HA slider)
+  - { id: last_stock,  type: float, restore_value: no, initial_value: "0" }   # committed stock duty
+  - { id: stock_init,  type: bool,  restore_value: no, initial_value: "false" }
+  - { id: reflecting,  type: bool,  restore_value: no, initial_value: "false" }
 
-# ---- INPUT: control-board PWM (what the physical buttons set) ----------------
-# The stock "PWM" line is a toggling signal -> read its duty %.
-# If YOUR board outputs a steady analog voltage instead (no toggling), replace
-# this block with an `adc` sensor on GPIO3 and scale (volts / 3.3) to a fraction.
+# ---- INPUT: stock control-board PWM, read as an analog average --------------
+# Wire the control-board side of the cut PWM through an RC low-pass (e.g. 10 k
+# series + 1 uF to GND) into GPIO3. This turns the PWM into a steady voltage =
+# duty x Vhigh, avoiding tens of thousands of edge interrupts, and it also works
+# if the stock output is already analog. If the stock high level is > 3.3 V, add
+# a resistor divider so the ADC never exceeds ~3.0 V, and set adc_max_v to the
+# divided reading at L12.
 sensor:
-  - platform: duty_cycle
+  - platform: adc
     pin: GPIO3
-    id: stock_duty
+    id: stock_v
+    name: "Stock PWM (avg)"
+    attenuation: 12db
     update_interval: 100ms
     filters:
-      - median: { window_size: 3, send_every: 1 }
+      - median: { window_size: 5, send_every: 1 }
 
 # ---- OUTPUT: PWM to the motor driver ----------------------------------------
 output:
@@ -85,42 +105,85 @@ fan:
     speed_count: 100
     restore_mode: ALWAYS_OFF
     on_turn_on:
-      - lambda: 'id(ha_override) = true; id(ha_level) = id(heran_fan).speed / 100.0f;'
+      - lambda: |-
+          if (id(reflecting)) return;
+          float s = id(heran_fan).speed / 100.0f;
+          if (s <= 0.0f) s = 0.30f;              // "on" with no speed -> a sensible default
+          id(ha_level) = s;
+          id(ha_override) = true;
     on_speed_set:
-      - lambda: 'id(ha_override) = true; id(ha_level) = id(heran_fan).speed / 100.0f;'
+      - lambda: |-
+          if (id(reflecting)) return;
+          id(ha_level) = id(heran_fan).speed / 100.0f;
+          id(ha_override) = true;
     on_turn_off:
-      - lambda: 'id(ha_override) = true; id(ha_level) = 0.0f;'
+      - lambda: |-
+          if (id(reflecting)) return;
+          id(ha_level) = 0.0f;
+          id(ha_override) = true;
 
 # ---- decide motor PWM every 100 ms: mirror the panel, or HA override ---------
 interval:
   - interval: 100ms
     then:
       - lambda: |-
-          float stock = id(stock_duty).has_state() ? id(stock_duty).state / 100.0f : 0.0f;
-          // a physical button press changes the stock duty -> return control to the panel
-          if (fabsf(stock - id(last_stock)) > 0.05f) { id(ha_override) = false; }
-          id(last_stock) = stock;
+          if (!id(stock_v).has_state()) return;
+          // stock duty from the averaged voltage (linear through origin)
+          float amax = ${adc_max_v};
+          float stock = amax > 0.0f ? (id(stock_v).state / amax) * ${max_duty} : 0.0f;
+          if (stock < 0.0f) stock = 0.0f;
+          if (stock > ${max_duty}) stock = ${max_duty};
+          if (stock < 0.03f) stock = 0.0f;       // treat tiny residual as off
+
+          if (!id(stock_init)) { id(last_stock) = stock; id(stock_init) = true; }
+
+          // a physical button press moves the stock duty -> hand back to the panel
+          if (fabsf(stock - id(last_stock)) > ${handback_delta}) {
+            id(ha_override) = false;
+            id(last_stock) = stock;
+          }
+          if (!id(ha_override)) id(last_stock) = stock;   // track panel while mirroring
+
+          // choose the motor output
           float out;
           if (id(ha_override)) {
-            float l = id(ha_level);                                   // 0..1 from HA
+            float l = id(ha_level);              // 0..1
             out = (l <= 0.0f) ? 0.0f : (${min_duty} + l * (${max_duty} - ${min_duty}));
           } else {
-            out = stock;                                              // mirror the panel exactly
+            out = stock;
           }
-          id(fan_pwm)->set_level(out);
+          id(fan_pwm).set_level(out);
+
+          // reflect the real state to the HA entity (guarded so it can't self-trigger)
+          float span = (${max_duty} - ${min_duty});
+          int pct = (span > 0.0f) ? (int) roundf(((out - ${min_duty}) / span) * 100.0f) : 0;
+          if (pct < 0) pct = 0; if (pct > 100) pct = 100;
+          bool on = out > 0.01f;
+          if (on != id(heran_fan).state || (on && pct != (int) id(heran_fan).speed)) {
+            id(reflecting) = true;
+            auto call = id(heran_fan).make_call();
+            call.set_state(on);
+            if (on) call.set_speed(pct);
+            call.perform();
+            id(reflecting) = false;
+          }
 
 # ---- OSCILLATION: momentary "tap" of the stock 摇头 / SW5 button -------------
+# It is a toggle with no state feedback, so expose it as a button (honest UX).
+# Optional real feedback: sense OSC-A/OSC-B "AC present" via an optocoupler into a
+# binary_sensor and build a proper switch from it (see BUILD_GUIDE.md).
 switch:
   - platform: gpio
     id: sw5_line
     pin: GPIO5
     internal: true
     restore_mode: ALWAYS_OFF
+
+button:
   - platform: template
-    name: "Oscillation"
-    optimistic: true
-    turn_on_action:  { script.execute: tap_sw5 }
-    turn_off_action: { script.execute: tap_sw5 }
+    name: "Toggle Oscillation"
+    on_press:
+      - script.execute: tap_sw5
 
 script:
   - id: tap_sw5
