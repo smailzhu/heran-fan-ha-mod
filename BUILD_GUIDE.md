@@ -132,6 +132,14 @@ Signal-flow overview (exact pins/resistor values are in Tables A–C above).
 GitHub renders this diagram automatically.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{
+  "fontSize":"14px",
+  "primaryColor":"#eef2ff","primaryTextColor":"#111111","primaryBorderColor":"#3355aa",
+  "secondaryColor":"#e8f5e9","tertiaryColor":"#fff8e1",
+  "lineColor":"#555555","textColor":"#111111",
+  "clusterBkg":"#f6f6f6","clusterBorder":"#888888",
+  "edgeLabelBackground":"#ffffff"
+}}}%%
 flowchart LR
     subgraph FAN["Fan — stock parts"]
         PWR["Power board<br/>mains &rarr; 24 V"]
