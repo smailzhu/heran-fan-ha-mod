@@ -10,128 +10,129 @@
 
   <rect x="0" y="0" width="1120" height="775" fill="#ffffff"/>
   <text x="560" y="32" text-anchor="middle" font-size="22" font-weight="bold" fill="#111">Heran fan - 5 V build (ESPHome Option B) - perfboard wiring</text>
-  <text x="560" y="54" text-anchor="middle" font-size="13" fill="#555">Net connections are authoritative; component positions are a suggested placement on the 20x80 mm board.</text>
+  <text x="560" y="54" text-anchor="middle" font-size="13" fill="#555">Net connections are authoritative; positions suggested. 24 V kept in the right corner; divider at its source.</text>
 
-  <!-- board -->
   <rect x="40" y="80" width="1040" height="600" rx="10" fill="#eef5ef" stroke="#4a7d5a" stroke-width="2"/>
   <rect x="52" y="92" width="1016" height="576" fill="url(#holes)"/>
 
   <!-- rails -->
   <line x1="70" y1="118" x2="1050" y2="118" stroke="#d11" stroke-width="3"/>
   <text x="76" y="112" font-size="13" font-weight="bold" fill="#d11">+5 V rail</text>
-  <line x1="70" y1="648" x2="1050" y2="648" stroke="#111" stroke-width="3"/>
-  <text x="980" y="642" font-size="13" font-weight="bold" fill="#111">GND rail</text>
+  <line x1="70" y1="650" x2="1050" y2="650" stroke="#111" stroke-width="3"/>
+  <text x="76" y="666" font-size="13" font-weight="bold" fill="#111">GND rail</text>
 
-  <!-- buck -->
-  <rect x="70" y="140" width="190" height="66" rx="6" fill="#fff3e0" stroke="#b36b00" stroke-width="1.5"/>
-  <text x="165" y="166" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">MP1584 buck</text>
-  <text x="165" y="185" text-anchor="middle" font-size="12" fill="#333">24 V -&gt; set 5.0 V</text>
-  <line x1="230" y1="140" x2="230" y2="118" stroke="#d11" stroke-width="2"/>
-  <line x1="110" y1="206" x2="110" y2="648" stroke="#111" stroke-width="2"/>
-
-  <!-- ESP32-C3 -->
-  <rect x="95" y="250" width="165" height="330" rx="8" fill="#e8eeff" stroke="#2d50a8" stroke-width="2"/>
-  <text x="177" y="276" text-anchor="middle" font-size="14" font-weight="bold" fill="#111">ESP32-C3</text>
-  <text x="177" y="294" text-anchor="middle" font-size="12" fill="#333">SuperMini (3.3 V)</text>
+  <!-- ESP32-C3 (left) -->
+  <rect x="95" y="230" width="160" height="350" rx="8" fill="#e8eeff" stroke="#2d50a8" stroke-width="2"/>
+  <text x="175" y="256" text-anchor="middle" font-size="14" font-weight="bold" fill="#111">ESP32-C3</text>
+  <text x="175" y="274" text-anchor="middle" font-size="12" fill="#333">SuperMini (3.3 V)</text>
   <g font-size="12" fill="#111">
-    <circle cx="260" cy="320" r="4" fill="#d11"/><text x="200" y="324" text-anchor="end">5V</text>
-    <circle cx="260" cy="360" r="4" fill="#e67e22"/><text x="200" y="364" text-anchor="end">GPIO3</text>
-    <circle cx="260" cy="420" r="4" fill="#2d50a8"/><text x="200" y="424" text-anchor="end">GPIO4</text>
-    <circle cx="260" cy="490" r="4" fill="#1a8f3c"/><text x="200" y="494" text-anchor="end">GPIO5</text>
-    <circle cx="260" cy="550" r="4" fill="#111"/><text x="200" y="554" text-anchor="end">GND</text>
+    <circle cx="255" cy="300" r="4" fill="#d11"/><text x="200" y="304" text-anchor="end">5V</text>
+    <circle cx="255" cy="345" r="4" fill="#e67e22"/><text x="200" y="349" text-anchor="end">GPIO3</text>
+    <circle cx="255" cy="410" r="4" fill="#2d50a8"/><text x="200" y="414" text-anchor="end">GPIO4</text>
+    <circle cx="255" cy="500" r="4" fill="#1a8f3c"/><text x="200" y="504" text-anchor="end">GPIO5</text>
+    <circle cx="255" cy="560" r="4" fill="#111"/><text x="200" y="564" text-anchor="end">GND</text>
   </g>
-  <polyline points="260,320 290,320 290,118" fill="none" stroke="#d11" stroke-width="2"/>
-  <polyline points="260,550 300,550 300,648" fill="none" stroke="#111" stroke-width="2"/>
+  <polyline points="255,300 285,300 285,118" fill="none" stroke="#d11" stroke-width="2"/>
+  <polyline points="255,560 310,560 310,650" fill="none" stroke="#111" stroke-width="2"/>
 
-  <!-- 74AHCT125 -->
-  <rect x="470" y="300" width="170" height="170" rx="8" fill="#eafaf0" stroke="#1a8f3c" stroke-width="2"/>
-  <text x="555" y="326" text-anchor="middle" font-size="14" font-weight="bold" fill="#111">74AHCT125</text>
-  <text x="555" y="344" text-anchor="middle" font-size="11" fill="#333">3.3 -&gt; 5 V buffer</text>
+  <!-- 74AHCT125 (center) -->
+  <rect x="430" y="300" width="160" height="150" rx="8" fill="#eafaf0" stroke="#1a8f3c" stroke-width="2"/>
+  <text x="510" y="326" text-anchor="middle" font-size="14" font-weight="bold" fill="#111">74AHCT125</text>
+  <text x="510" y="343" text-anchor="middle" font-size="11" fill="#333">3.3 -&gt; 5 V buffer</text>
   <g font-size="11" fill="#111">
-    <circle cx="470" cy="390" r="4" fill="#2d50a8"/><text x="478" y="384">1A in</text>
-    <circle cx="640" cy="390" r="4" fill="#7a3fb0"/><text x="632" y="384" text-anchor="end">1Y out</text>
-    <circle cx="520" cy="300" r="4" fill="#d11"/><text x="528" y="296">Vcc14</text>
-    <circle cx="520" cy="470" r="4" fill="#111"/><text x="528" y="486">GND7 + 1OE1</text>
+    <circle cx="430" cy="375" r="4" fill="#2d50a8"/><text x="438" y="369">1A in</text>
+    <circle cx="590" cy="375" r="4" fill="#7a3fb0"/><text x="582" y="369" text-anchor="end">1Y out</text>
+    <circle cx="505" cy="300" r="4" fill="#d11"/><text x="513" y="296">Vcc14</text>
+    <circle cx="505" cy="450" r="4" fill="#111"/><text x="513" y="466">GND7 + 1OE1</text>
   </g>
-  <polyline points="520,300 520,118" fill="none" stroke="#d11" stroke-width="2"/>
-  <polyline points="520,470 520,648" fill="none" stroke="#111" stroke-width="2"/>
-  <polyline points="260,420 400,420 400,390 470,390" fill="none" stroke="#2d50a8" stroke-width="2" marker-end="url(#arr)"/>
-  <text x="300" y="412" font-size="11" fill="#2d50a8">GPIO4 PWM (3.3 V)</text>
+  <polyline points="505,300 505,118" fill="none" stroke="#d11" stroke-width="2"/>
+  <polyline points="505,450 505,650" fill="none" stroke="#111" stroke-width="2"/>
+  <polyline points="255,410 390,410 390,375 430,375" fill="none" stroke="#2d50a8" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="300" y="402" font-size="11" fill="#2d50a8">GPIO4 PWM (3.3 V)</text>
 
-  <!-- 100 ohm -> PWM-motor header (y330), with pulldown -->
-  <rect x="690" y="376" width="60" height="28" rx="4" fill="#f3e8ff" stroke="#7a3fb0"/>
-  <text x="720" y="395" text-anchor="middle" font-size="12" fill="#111">100 &#937;</text>
-  <polyline points="640,390 690,390" fill="none" stroke="#7a3fb0" stroke-width="2"/>
-  <polyline points="750,390 810,390 810,330 860,330" fill="none" stroke="#7a3fb0" stroke-width="2" marker-end="url(#arr)"/>
-  <text x="762" y="322" font-size="11" fill="#7a3fb0">5 V PWM</text>
-  <rect x="752" y="432" width="56" height="26" rx="4" fill="#fff" stroke="#111"/>
-  <text x="780" y="450" text-anchor="middle" font-size="11" fill="#111">10k</text>
-  <polyline points="780,390 780,432" fill="none" stroke="#111" stroke-width="1.5"/>
-  <polyline points="780,458 780,648" fill="none" stroke="#111" stroke-width="1.5"/>
+  <!-- 100 ohm + pulldown -> PWM-motor header -->
+  <rect x="630" y="361" width="58" height="28" rx="4" fill="#f3e8ff" stroke="#7a3fb0"/>
+  <text x="659" y="380" text-anchor="middle" font-size="12" fill="#111">100 &#937;</text>
+  <polyline points="590,375 630,375" fill="none" stroke="#7a3fb0" stroke-width="2"/>
+  <polyline points="688,375 735,375 735,330 820,330" fill="none" stroke="#7a3fb0" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="700" y="322" font-size="11" fill="#7a3fb0">5 V PWM</text>
+  <rect x="690" y="415" width="54" height="26" rx="4" fill="#fff" stroke="#111"/>
+  <text x="717" y="433" text-anchor="middle" font-size="11" fill="#111">10k</text>
+  <polyline points="717,375 717,415" fill="none" stroke="#111" stroke-width="1.5"/>
+  <polyline points="717,441 717,650" fill="none" stroke="#111" stroke-width="1.5"/>
 
-  <!-- input divider/RC: header PWM-ctrl -> series 10k -> nodeX -> GPIO3 ; nodeX -> 10k/1uF to GND -->
-  <rect x="720" y="150" width="56" height="26" rx="4" fill="#fff" stroke="#e67e22"/>
-  <text x="748" y="168" text-anchor="middle" font-size="11" fill="#111">10k</text>
-  <circle cx="690" cy="163" r="4" fill="#e67e22"/><text x="655" y="150" font-size="11" fill="#111">node X</text>
-  <polyline points="860,275 800,275 800,163 776,163" fill="none" stroke="#e67e22" stroke-width="2"/>
-  <polyline points="720,163 690,163" fill="none" stroke="#e67e22" stroke-width="2"/>
-  <polyline points="690,163 560,163 560,360 260,360" fill="none" stroke="#e67e22" stroke-width="2" marker-end="url(#arr)"/>
-  <text x="300" y="353" font-size="11" fill="#e67e22">divided -&gt; GPIO3 (ADC)</text>
-  <!-- nodeX 1uF to GND -->
-  <rect x="640" y="200" width="46" height="24" rx="4" fill="#fff" stroke="#111"/>
-  <text x="663" y="217" text-anchor="middle" font-size="10" fill="#111">1uF</text>
-  <polyline points="663,163 663,200" fill="none" stroke="#111" stroke-width="1.2"/>
-  <polyline points="663,224 663,648" fill="none" stroke="#111" stroke-width="1.2"/>
-  <!-- nodeX 10k to GND -->
-  <rect x="580" y="200" width="46" height="24" rx="4" fill="#fff" stroke="#111"/>
-  <text x="603" y="217" text-anchor="middle" font-size="10" fill="#111">10k</text>
-  <polyline points="603,163 603,200" fill="none" stroke="#111" stroke-width="1.5"/>
-  <polyline points="603,224 603,648" fill="none" stroke="#111" stroke-width="1.5"/>
-
-  <!-- PC817 opto (oscillation) -->
-  <rect x="470" y="500" width="140" height="110" rx="8" fill="#fdeef0" stroke="#b02a4a" stroke-width="2"/>
-  <text x="540" y="525" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">PC817</text>
-  <text x="540" y="542" text-anchor="middle" font-size="10" fill="#333">opto (SMD)</text>
+  <!-- PC817 opto (center-low) + 330 ohm -->
+  <rect x="430" y="490" width="130" height="100" rx="8" fill="#fdeef0" stroke="#b02a4a" stroke-width="2"/>
+  <text x="495" y="515" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">PC817</text>
+  <text x="495" y="531" text-anchor="middle" font-size="10" fill="#333">opto (SMD)</text>
   <g font-size="10" fill="#111">
-    <circle cx="470" cy="560" r="4" fill="#1a8f3c"/><text x="478" y="564">1 anode</text>
-    <circle cx="470" cy="595" r="4" fill="#111"/><text x="478" y="599">2 cath</text>
-    <circle cx="610" cy="560" r="4" fill="#8a5a2b"/><text x="602" y="564" text-anchor="end">4 col</text>
-    <circle cx="610" cy="595" r="4" fill="#8a5a2b"/><text x="602" y="599" text-anchor="end">3 emit</text>
+    <circle cx="430" cy="545" r="4" fill="#1a8f3c"/><text x="438" y="549">1 anode</text>
+    <circle cx="430" cy="578" r="4" fill="#111"/><text x="438" y="582">2 cath</text>
+    <circle cx="560" cy="545" r="4" fill="#8a5a2b"/><text x="552" y="549" text-anchor="end">4 col</text>
+    <circle cx="560" cy="578" r="4" fill="#8a5a2b"/><text x="552" y="582" text-anchor="end">3 emit</text>
   </g>
-  <rect x="340" y="476" width="56" height="26" rx="4" fill="#eafaf0" stroke="#1a8f3c"/>
-  <text x="368" y="494" text-anchor="middle" font-size="11" fill="#111">330 &#937;</text>
-  <polyline points="260,490 368,490 368,476" fill="none" stroke="#1a8f3c" stroke-width="2"/>
-  <polyline points="368,502 368,560 470,560" fill="none" stroke="#1a8f3c" stroke-width="2" marker-end="url(#arr)"/>
-  <text x="300" y="486" font-size="11" fill="#1a8f3c">GPIO5</text>
-  <polyline points="470,595 440,595 440,648" fill="none" stroke="#111" stroke-width="1.5"/>
-  <polyline points="610,560 690,560 690,525 860,525" fill="none" stroke="#8a5a2b" stroke-width="2" marker-end="url(#arr)"/>
-  <polyline points="610,595 710,595 710,580 860,580" fill="none" stroke="#8a5a2b" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="320" y="487" width="56" height="26" rx="4" fill="#eafaf0" stroke="#1a8f3c"/>
+  <text x="348" y="505" text-anchor="middle" font-size="11" fill="#111">330 &#937;</text>
+  <polyline points="255,500 348,500 348,487" fill="none" stroke="#1a8f3c" stroke-width="2"/>
+  <polyline points="348,513 348,545 430,545" fill="none" stroke="#1a8f3c" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="270" y="494" font-size="11" fill="#1a8f3c">GPIO5</text>
+  <polyline points="430,578 405,578 405,650" fill="none" stroke="#111" stroke-width="1.5"/>
+  <polyline points="560,545 650,545 650,520 820,520" fill="none" stroke="#8a5a2b" stroke-width="2" marker-end="url(#arr)"/>
+  <polyline points="560,578 670,578 670,575 820,575" fill="none" stroke="#8a5a2b" stroke-width="2" marker-end="url(#arr)"/>
 
-  <!-- EDGE HEADER -->
-  <rect x="860" y="230" width="190" height="380" rx="8" fill="#f2f2f2" stroke="#666" stroke-width="1.5"/>
-  <text x="955" y="252" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">edge header (off-board)</text>
+  <!-- EDGE HEADER (right) -->
+  <rect x="820" y="210" width="230" height="250" rx="8" fill="#f2f2f2" stroke="#666" stroke-width="1.5"/>
+  <text x="935" y="232" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">edge header (off-board)</text>
   <g font-size="12" fill="#111">
-    <circle cx="860" cy="275" r="4" fill="#e67e22"/><text x="872" y="279">PWM-ctrl (from CN2)</text>
-    <circle cx="860" cy="330" r="4" fill="#7a3fb0"/><text x="872" y="334">PWM-motor (to driver)</text>
-    <circle cx="860" cy="400" r="4" fill="#d11"/><text x="872" y="404">+24 V (via fuse)</text>
-    <circle cx="860" cy="465" r="4" fill="#111"/><text x="872" y="469">GND (CN2)</text>
-    <circle cx="860" cy="525" r="4" fill="#8a5a2b"/><text x="872" y="529">SW5-a</text>
-    <circle cx="860" cy="580" r="4" fill="#8a5a2b"/><text x="872" y="584">SW5-b</text>
+    <circle cx="820" cy="258" r="4" fill="#e67e22"/><text x="832" y="262">PWM-ctrl (from CN2)</text>
+    <circle cx="820" cy="330" r="4" fill="#7a3fb0"/><text x="832" y="334">PWM-motor (to driver)</text>
+    <circle cx="820" cy="390" r="4" fill="#d11"/><text x="832" y="394">+24 V (via fuse)</text>
+    <circle cx="820" cy="435" r="4" fill="#111"/><text x="832" y="439">GND (CN2)</text>
   </g>
-  <polyline points="860,400 430,400 430,228 165,228 165,140" fill="none" stroke="#d11" stroke-width="1.5" stroke-dasharray="5,4"/>
-  <text x="250" y="222" font-size="10" fill="#d11">+24 V (fused) to buck IN</text>
-  <polyline points="860,465 835,465 835,648" fill="none" stroke="#111" stroke-width="1.5"/>
+  <!-- SW5 header (lower right) -->
+  <rect x="820" y="500" width="230" height="95" rx="8" fill="#f2f2f2" stroke="#666" stroke-width="1.5"/>
+  <g font-size="12" fill="#111">
+    <circle cx="820" cy="520" r="4" fill="#8a5a2b"/><text x="832" y="524">SW5-a (MCU side)</text>
+    <circle cx="820" cy="575" r="4" fill="#8a5a2b"/><text x="832" y="579">SW5-b (GND side)</text>
+  </g>
 
-  <!-- legend (below board) -->
+  <!-- divider/RC at the SOURCE (next to PWM-ctrl) -->
+  <rect x="690" y="245" width="54" height="26" rx="4" fill="#fff" stroke="#e67e22"/>
+  <text x="717" y="263" text-anchor="middle" font-size="11" fill="#111">10k</text>
+  <circle cx="660" cy="258" r="4" fill="#e67e22"/><text x="628" y="246" font-size="11" fill="#111">node X</text>
+  <polyline points="820,258 744,258" fill="none" stroke="#e67e22" stroke-width="2"/>
+  <polyline points="690,258 660,258" fill="none" stroke="#e67e22" stroke-width="2"/>
+  <polyline points="660,258 350,258 350,345 255,345" fill="none" stroke="#e67e22" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="380" y="251" font-size="11" fill="#e67e22">divided -&gt; GPIO3 (ADC)</text>
+  <rect x="615" y="290" width="44" height="24" rx="4" fill="#fff" stroke="#111"/>
+  <text x="637" y="307" text-anchor="middle" font-size="10" fill="#111">10k</text>
+  <polyline points="637,258 637,290" fill="none" stroke="#111" stroke-width="1.5"/>
+  <polyline points="637,314 637,650" fill="none" stroke="#111" stroke-width="1.5"/>
+  <rect x="665" y="290" width="44" height="24" rx="4" fill="#fff" stroke="#111"/>
+  <text x="687" y="307" text-anchor="middle" font-size="10" fill="#111">1uF</text>
+  <polyline points="660,258 687,258 687,290" fill="none" stroke="#111" stroke-width="1.2"/>
+  <polyline points="687,314 687,650" fill="none" stroke="#111" stroke-width="1.2"/>
+
+  <!-- BUCK next to +24V header -->
+  <rect x="690" y="380" width="120" height="66" rx="6" fill="#fff3e0" stroke="#b36b00" stroke-width="1.5"/>
+  <text x="750" y="406" text-anchor="middle" font-size="12" font-weight="bold" fill="#111">MP1584</text>
+  <text x="750" y="424" text-anchor="middle" font-size="11" fill="#333">24-&gt;5.0 V</text>
+  <polyline points="820,390 810,390" fill="none" stroke="#d11" stroke-width="2"/>
+  <text x="760" y="372" font-size="10" fill="#d11">24 V in</text>
+  <polyline points="770,380 770,118" fill="none" stroke="#d11" stroke-width="2"/>
+  <text x="776" y="360" font-size="10" fill="#d11">5 V out</text>
+  <polyline points="700,446 700,650" fill="none" stroke="#111" stroke-width="1.5"/>
+
+  <!-- legend -->
   <g font-size="12">
-    <rect x="52" y="692" width="640" height="56" rx="6" fill="#ffffff" stroke="#ccc"/>
+    <rect x="52" y="692" width="700" height="56" rx="6" fill="#ffffff" stroke="#ccc"/>
     <text x="62" y="712" font-weight="bold" fill="#111">Legend</text>
-    <line x1="120" y1="708" x2="150" y2="708" stroke="#d11" stroke-width="3"/><text x="156" y="712" fill="#111">+5 V</text>
-    <line x1="210" y1="708" x2="240" y2="708" stroke="#111" stroke-width="3"/><text x="246" y="712" fill="#111">GND</text>
-    <line x1="300" y1="708" x2="330" y2="708" stroke="#e67e22" stroke-width="3"/><text x="336" y="712" fill="#111">PWM in / divider</text>
-    <line x1="470" y1="708" x2="500" y2="708" stroke="#2d50a8" stroke-width="3"/><text x="506" y="712" fill="#111">GPIO4 3.3 V</text>
+    <line x1="120" y1="708" x2="150" y2="708" stroke="#d11" stroke-width="3"/><text x="156" y="712" fill="#111">+5 V / 24 V</text>
+    <line x1="240" y1="708" x2="270" y2="708" stroke="#111" stroke-width="3"/><text x="276" y="712" fill="#111">GND</text>
+    <line x1="330" y1="708" x2="360" y2="708" stroke="#e67e22" stroke-width="3"/><text x="366" y="712" fill="#111">PWM in / divider</text>
+    <line x1="510" y1="708" x2="540" y2="708" stroke="#2d50a8" stroke-width="3"/><text x="546" y="712" fill="#111">GPIO4 3.3 V</text>
     <line x1="120" y1="734" x2="150" y2="734" stroke="#7a3fb0" stroke-width="3"/><text x="156" y="738" fill="#111">5 V PWM out</text>
-    <line x1="300" y1="734" x2="330" y2="734" stroke="#1a8f3c" stroke-width="3"/><text x="336" y="738" fill="#111">oscillation</text>
-    <line x1="470" y1="734" x2="500" y2="734" stroke="#8a5a2b" stroke-width="3"/><text x="506" y="738" fill="#111">SW5 tap</text>
+    <line x1="330" y1="734" x2="360" y2="734" stroke="#1a8f3c" stroke-width="3"/><text x="366" y="738" fill="#111">oscillation</text>
+    <line x1="510" y1="734" x2="540" y2="734" stroke="#8a5a2b" stroke-width="3"/><text x="546" y="738" fill="#111">SW5 tap</text>
   </g>
 </svg>
