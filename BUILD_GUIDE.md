@@ -187,11 +187,11 @@ flowchart LR
 (`GPIO3`) and the motor side is driven by the ESP (`GPIO4`). Everything on the
 "Added" side lives on the **isolated 24 V secondary**; never bridge mains.
 
-### If the PWM turns out to be 5 V (level-shifted variant)
+### 5 V variant — divider + level shifter (CONFIRMED for this fan)
 
-If Section 4 shows the stock PWM high level is **5 V** (the control board has a
-"+5 V" rail, so this is plausible), the 3.3 V-direct wiring above is **not safe**
-— the ESP32-C3 is 3.3 V. Two changes:
+**This fan measured 5 V logic** (control-board MCU rail = 5 V), so **this is the
+wiring to use** — the 3.3 V-direct wiring in §2c is only for units that measure
+3.3 V. The ESP32-C3 outputs 3.3 V, so two changes are needed:
 
 1. **GPIO3 mirror input:** add a **resistor divider** so the ADC never exceeds
    ~3.3 V. Reuse the RC parts as a combined filter + divider:
@@ -342,9 +342,9 @@ Speed → duty reference (for tuning / if you use `speed_count: 12`):
 7. **Mirror:** with no HA command, the fan follows the physical panel.
 8. **Speed:** set a speed in HA → the motor follows (override). Press the physical
    风速 button → control returns to the panel.
-   - *No response?* Try `pwm_freq: 1000Hz`/`5000Hz`/`20000Hz`. Still nothing → the
-     PWM input may be 5 V: add proper level translation on GPIO4→PWM (a series
-     resistor is **not** protection).
+   - *No response?* Check the **level shifter** (HV = 5 V from the buck, in/out
+     correct) and try `pwm_freq: 1000Hz`/`5000Hz`/`20000Hz`. (This fan is 5 V, so
+     the ESP's 3.3 V alone can't drive it — a series resistor is **not** a shifter.)
 9. **Oscillation:** press **Toggle Oscillation** → head swings; press again →
    stops. If nothing, swap PC817 pins 3/4 (polarity).
 10. **Fail-safe:** reboot the ESP → the fan follows the panel (motor off if the

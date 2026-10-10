@@ -60,8 +60,7 @@ Wiring + parts: **[BUILD_GUIDE.md](BUILD_GUIDE.md)**.
 - ESP32-C3 (this repo uses an **ESP32-C3 SuperMini**, see [`esp32/`](esp32/))
 - 24 V→5 V buck converter (MP1584 / "mini-360")
 - 1× PC817 optocoupler; resistors 330 Ω, 100 Ω, 2× 10 kΩ; 1× 1 µF capacitor; 0.5 A inline fuse; wire
-- **level shifter 3.3→5 V** (74AHCT125 / BSS138) + divider — **this unit is 5 V** (see BUILD_GUIDE §2d)
-- *(optional insurance)* a BSS138 level shifter — only if PWM turns out to be 5 V
+- **level shifter 3.3→5 V** (74AHCT125 / BSS138) + 2× 10 kΩ divider — **required: this unit measured 5 V** (see BUILD_GUIDE §2d)
 - Home Assistant with the ESPHome add-on
 - A **multimeter** (ideally with **Hz/duty** mode) to verify the PWM before wiring
 
@@ -109,8 +108,8 @@ Full bill of materials: [BUILD_GUIDE.md §1](BUILD_GUIDE.md).
     the panel is off).
 
 ### Phase 4 — Tune
-13. If the fan **doesn't respond to the PWM**: it may be 5 V logic — insert the
-    **BSS138 level shifter** on GPIO4→PWM. If it responds oddly, try a different
+13. If the fan **doesn't respond to the PWM**: check the **level shifter** (HV = 5 V,
+    in/out correct) and the GPIO3 divider. If it responds oddly, try a different
     `pwm_freq` (1000/5000/20000 Hz) in the YAML.
 14. Adjust `min_duty` / `max_duty` in the YAML to match your measured L1/L12 duty.
 
