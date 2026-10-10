@@ -227,7 +227,10 @@ Record results in the tables below once measured.
 > **or a steady analog voltage** could all produce. The 3.3 V-logic reading below
 > is the *likely* interpretation, **not confirmed**. Measure the **actual high
 > level, frequency, and waveform** (Hz meter / scope) before wiring GPIO3/GPIO4.
-> A series resistor is **not** overvoltage protection.
+ A series resistor is **not** overvoltage protection.
+> **Update:** the clearer control-board photo (`pcb_1/control_back_clear.jpg`) shows
+> a **"+5V" rail** by the MCU — so the PWM could well be **5 V logic**. If so, add a
+> divider on the GPIO3 ADC input and level-translate the GPIO4 output to 5 V.
 
 **Speed — `PWM` (logic), measured 2026-09-27 (DC avg, PWM→GND, motor unplugged):**
 
