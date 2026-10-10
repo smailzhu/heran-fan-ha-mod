@@ -273,6 +273,25 @@ true loaded value; open-circuit reads higher.
 
 ---
 
+### How to measure the PWM high level (3.3 V vs 5 V)
+
+A DMM on a PWM line reads the **average** (duty × V_high) — which is why the
+averages above don't by themselves distinguish 3.3 V from 5 V. Pick one:
+
+- **A — meter with duty-% / Hz (easiest):** read **duty %** on `PWM→GND` at any
+  level, then **V_high = V_avg ÷ duty**. e.g. L1 = 0.8 V: duty ≈24 % → 3.3 V;
+  duty ≈16 % → 5 V. One reading settles it.
+- **B — diode + cap peak detector (DMM only, no Hz mode):** wire
+  `PWM →|— (diode) — cap 0.1–1 µF — GND` and read **DC across the cap**; it charges
+  to the peak. **V_high ≈ reading + diode drop** (~0.2–0.3 V Schottky, ~0.6 V
+  1N4148). Draws negligible current.
+- **C — measure the logic rail (quick corroboration):** for a push-pull MCU output,
+  PWM high ≈ the MCU supply. With the fan powered, measure DC from the board's
+  **"+5V" pad / MCU VDD → GND**; ~5 V ⇒ likely 5 V PWM, a 3.3 V regulator ⇒ 3.3 V.
+- **D — oscilloscope:** reads the square-wave peak directly (definitive).
+
+All on the isolated low-voltage secondary; fan powered; probe to `CN2 GND`.
+
 ## 4a. Tools — do you need a scope?
 
 For this build, **a Hz/duty multimeter beats a scope** — you need a few *numbers*,
