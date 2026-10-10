@@ -229,26 +229,26 @@ Record results in the tables below once measured.
 > level, frequency, and waveform** (Hz meter / scope) before wiring GPIO3/GPIO4.
  A series resistor is **not** overvoltage protection.
 > **Update:** the clearer control-board photo (`pcb_1/control_back_clear.jpg`) shows
-> a **"+5V" rail** by the MCU — so the PWM could well be **5 V logic**. If so, add a
-> divider on the GPIO3 ADC input and level-translate the GPIO4 output to 5 V.
+> a **"+5V" rail** by the MCU, and that rail **measures 5 V** — so treat the PWM as
+> **5 V logic**: add a divider on the GPIO3 ADC input and level-translate GPIO4 to 5 V.
 
 **Speed — `PWM` (logic), measured 2026-09-27 (DC avg, PWM→GND, motor unplugged):**
 
 Fan has **12 speed levels** (no L13; **L12 is max**). `off` = **0 V** ⇒ PWM idles
-low ⇒ **active-high**. Max L12 ≈ 2.9 V, so **logic level not fully pinned** by
-averages alone: **3.3 V logic** ⇒ L12 ≈ 88% duty (most likely), or **5 V logic**
-⇒ L12 ≈ 58%. Resolve with a duty-% / Hz meter reading at L12. Working assumption:
-**3.3 V logic** (ESP drives PWM directly; add a level shifter only if 5 V).
+low ⇒ **active-high**. **CONFIRMED 5 V logic** — the control-board MCU rail measures
+**5 V**, so duty = avg ÷ 5 V. Stock range ≈ **16 % (L1) → 60 % (L12)**. (The ESP
+drives via a 3.3→5 V level shifter, and reads the stock PWM through a divider — see
+`BUILD_GUIDE.md` §2d. Confirm the PWM pin peak directly to be 100 % sure.)
 
-| Level | Avg (V) | Duty | Level | Avg (V) | Duty |
-|-------|---------|------|-------|---------|------|
-| off   | 0.000   | 0%   | L7    | 1.815   | 55%  |
-| L1    | 0.80    | ~24% (min-start) | L8 | 1.99 | 60% |
-| L2    | 0.989   | 30%  | L9    | 2.12    | 64%  |
-| L3    | 1.255   | 38%  | L10   | 2.23    | 68%  |
-| L4    | 1.474   | 45%  | L11   | 2.64    | 80%  |
-| L5    | 1.555   | 47%  | **L12 (max)** | 2.98 / 2.91 conn | ~88% |
-| L6    | 1.70    | 52%  |       |         |      |
+| Level | Avg (V) | Duty@5V | Level | Avg (V) | Duty@5V |
+|-------|---------|---------|-------|---------|---------|
+| off   | 0.000   | 0%      | L7    | 1.815   | 36%     |
+| L1    | 0.80    | ~16% (min) | L8 | 1.99   | 40%     |
+| L2    | 0.989   | 20%     | L9    | 2.12    | 42%     |
+| L3    | 1.255   | 25%     | L10   | 2.23    | 45%     |
+| L4    | 1.474   | 29%     | L11   | 2.64    | 53%     |
+| L5    | 1.555   | 31%     | **L12 (max)** | 2.98 / 2.91 conn | ~60% |
+| L6    | 1.70    | 34%     |       |         |         |
 
 - **`+24V` rail:** measured **~23.8 V** (CN2 pin 3 → GND). ✅ ~24 V.
 - **PWM frequency:** still unknown (meter gives duty via average, not freq). Pick

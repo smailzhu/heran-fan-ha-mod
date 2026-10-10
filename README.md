@@ -39,8 +39,8 @@ board for the AC oscillation motor) transfers to most similar DC fans.
 
 ## How it works (the short version)
 
-The fan has 3 PCBs. The control board sends the motor a **logic-level PWM** (likely
-3.3 V — unverified) speed
+The fan has 3 PCBs. The control board sends the motor a **5 V logic PWM** (MCU rail
+measured 5 V) speed
 command on `CN2` and drives a **24 V AC synchronous** oscillation motor on
 `OSC-A/OSC-B`. So:
 
@@ -60,6 +60,7 @@ Wiring + parts: **[BUILD_GUIDE.md](BUILD_GUIDE.md)**.
 - ESP32-C3 (this repo uses an **ESP32-C3 SuperMini**, see [`esp32/`](esp32/))
 - 24 V→5 V buck converter (MP1584 / "mini-360")
 - 1× PC817 optocoupler; resistors 330 Ω, 100 Ω, 2× 10 kΩ; 1× 1 µF capacitor; 0.5 A inline fuse; wire
+- **level shifter 3.3→5 V** (74AHCT125 / BSS138) + divider — **this unit is 5 V** (see BUILD_GUIDE §2d)
 - *(optional insurance)* a BSS138 level shifter — only if PWM turns out to be 5 V
 - Home Assistant with the ESPHome add-on
 - A **multimeter** (ideally with **Hz/duty** mode) to verify the PWM before wiring
@@ -137,8 +138,9 @@ pcb_2/               – fan-head motor driver + motor photos
 ## Status
 
 Reverse-engineering and measurements are **done** (see `HA_MOD_NOTES.md`):
-- PWM: active-high, 12 levels, ~24%→90% duty. **Logic level (3.3 vs 5 V) and
-  frequency still to be confirmed on a scope/Hz meter before wiring.**
+- PWM: **5 V logic** (MCU rail = 5 V), active-high, 12 levels, ~16%→60% duty.
+  Needs a divider + 3.3→5 V level shifter (BUILD_GUIDE §2d). Confirm the PWM pin
+  peak and frequency before wiring.
 - Oscillation: `TYJ50-8` AC synchronous, symmetric ~50/60 Hz (~16.5 V), reused via SW5.
 - Firmware: Option B config provided; **bench/hardware bring-up in progress**.
 

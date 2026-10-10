@@ -22,8 +22,8 @@ the stock **SW5 (摇头)** button through an optocoupler (the stock board keeps
 generating the AC the synchronous oscillation motor needs).
 
 Measurements this relies on (multimeter DC averages — logic level/frequency still to confirm on your unit):
-- `CN2` pin1 `PWM` = **logic-level (likely 3.3 V — unverified)**, active-high, off = 0 V. 12 speed levels,
-  duty ≈ **24 % (L1, min-spin) → ~90 % (L12, max)**. Driver reads the PWM average.
+- `CN2` pin1 `PWM` = **5 V logic (MCU rail measured 5 V)**, active-high, off = 0 V. 12 speed levels,
+  duty ≈ **16 % (L1, min-spin) → ~60 % (L12, max)** (= avg ÷ 5 V). Driver reads the PWM average.
 - `CN2` `GND` (pin2), `+24V` (pin3). `OSC-A/B` (pins 4/5) = ~24 V **AC** to the
   `TYJ50-8` synchronous oscillation motor — left to the stock board.
 
@@ -42,7 +42,7 @@ Measurements this relies on (multimeter DC averages — logic level/frequency st
 | 7 | Capacitor **1 µF** (×1) | RC low-pass to GND on the GPIO3 input (with the 10 kΩ above) |
 | 8 | **Fuse 0.5 A** + inline holder | on the +24 V tap |
 | 9 | Hook-up wire, heatshrink, JST/Dupont | to interpose on `CN2` |
-| 10 | *(optional, 5 V case)* **level shifter 3.3→5 V** (74AHCT125 preferred, or BSS138 module) + 2× **10 kΩ** divider | only if the PWM measures 5 V (see §2d) |
+| 10 | **REQUIRED for this unit (5 V)** — **level shifter 3.3→5 V** (74AHCT125 preferred, or BSS138 module) + 2× **10 kΩ** divider | this fan measured 5 V → use the §2d wiring |
 | 11 | *(optional)* 5-pin JST male+female **matching CN2** | reversible inline interposer (see §2b) |
 
 **Tools:** multimeter (ideally Hz/duty), soldering iron, wire strippers, heatshrink;
@@ -127,6 +127,10 @@ pin out) and insert a new crimped pin from GPIO4 in its place. Reversible but
 needs a depin tool + crimp skills; Method 2 is easier.
 
 ## 2c. Wiring diagram (Option B)
+
+> **This fan measured 5 V logic** (MCU rail = 5 V) → use the **§2d level-shifted
+> wiring** (divider on GPIO3 + 3.3→5 V shifter on GPIO4). The 3.3 V-direct diagram
+> below applies only if *your* unit measures 3.3 V.
 
 Signal-flow overview (exact pins/resistor values are in Tables A–C above).
 GitHub renders this diagram automatically.
@@ -295,14 +299,14 @@ that file directly; don't hand-copy a config out of this guide.
 
 Speed → duty reference (for tuning / if you use `speed_count: 12`):
 
-| Level | Duty | Level | Duty |
-|------:|------|------:|------|
-| L1 | 24 % (min) | L7 | 55 % |
-| L2 | 30 % | L8 | 60 % |
-| L3 | 38 % | L9 | 64 % |
-| L4 | 45 % | L10 | 68 % |
-| L5 | 47 % | L11 | 80 % |
-| L6 | 52 % | L12 | ~90 % (max) |
+| Level | Duty@5V | Level | Duty@5V |
+|------:|---------|------:|---------|
+| L1 | 16 % (min) | L7 | 36 % |
+| L2 | 20 % | L8 | 40 % |
+| L3 | 25 % | L9 | 42 % |
+| L4 | 29 % | L10 | 45 % |
+| L5 | 31 % | L11 | 53 % |
+| L6 | 34 % | L12 | ~60 % (max) |
 
 ---
 

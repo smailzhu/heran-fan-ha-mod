@@ -18,8 +18,8 @@ the BOM in [`../BUILD_GUIDE.md`](../BUILD_GUIDE.md) §1.
 - **Hook-up wire** (silicone/solid) — **required**, not in the photos.
 - **Heatshrink tubing** — **required** to insulate every joint.
 - **Inline fuse holder / clips** — fuses are present but no holder is shown.
-- **Multimeter with Hz/duty mode** — needed for the pre-wiring PWM verification gate
-  (any DMM works for voltages; Hz/duty settles the 3.3 vs 5 V question).
+- **Level shifter 3.3→5 V** (74AHCT125 / BSS138) — **required** (this fan is 5 V); not in the kit.
+- **Multimeter** — any DMM for voltages; Hz/duty or a diode+cap trick confirms the PWM peak.
 
 ## 🔎 To confirm (can't read from the photos)
 - Resistor values = **330 Ω / 100 Ω / 10 kΩ** (and at least **two** 10 kΩ).
@@ -30,15 +30,15 @@ the BOM in [`../BUILD_GUIDE.md`](../BUILD_GUIDE.md) §1.
 - **5-pin JST matching CN2** → reversible interposer (`../BUILD_GUIDE.md` §2b).
 - **Female header strip** → socket the ESP32-C3 so it stays reflashable on the perfboard.
 
-## ❗ Important finding from the clearer board photo
-`../pcb_1/control_back_clear.jpg` shows a **"+5V" rail** silk next to the control-board
-MCU. That raises the chance the **PWM is 5 V logic, not 3.3 V** — so the
-*verify-before-wiring* gate matters even more:
-- If PWM is **5 V**, the **GPIO3 mirror input needs a resistor divider** (you have
-  resistors for this) and the **GPIO4 PWM output needs level translation up to 5 V**
-  (e.g. a small MOSFET/transistor stage or a 5 V-capable buffer — a BSS138 module
-  is the usual part; not seen in the kit).
-- Measure the **actual PWM high level** first and decide (see `../HA_MOD_NOTES.md` §4).
+## ❗ CONFIRMED: this fan is 5 V logic
+The control-board **MCU rail measures 5 V** (`../pcb_1/control_back_clear.jpg` "+5V"
+silk). So the PWM is **5 V logic** → build the **§2d (5 V) variant**:
+- **GPIO3 mirror input:** add a **resistor divider** (you have resistors) so the ADC
+  stays ≤ ~3.3 V.
+- **GPIO4 output:** add **level translation 3.3 → 5 V** — a **74AHCT125** (preferred)
+  or **BSS138** module. **This part is NOT in the current kit — order it.**
+- Stock duty range at 5 V ≈ **16 % (L1) → 60 % (L12)** (already set in the config).
+- (For 100 % certainty, confirm the PWM pin peak directly — diode+cap method, §4.)
 
 ## Photo index
 | File | Shows |

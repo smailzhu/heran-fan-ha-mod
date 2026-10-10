@@ -11,11 +11,11 @@
 #     just momentarily "taps" the 摇头 / SW5 button through an optocoupler. It is a
 #     TOGGLE (no absolute state feedback) -> exposed as a button, not a switch.
 #
-# !! BEFORE WIRING, VERIFY (see HA_MOD_NOTES.md Section 4):
-#   - the stock PWM's ACTUAL high level and that it is a real PWM (not analog).
-#     DC averages alone do NOT prove 3.3 V. If it is 5 V, add proper level
-#     translation (a series resistor is NOT protection). If it is a steady analog
-#     voltage, the RC+ADC input below still works.
+# !! THIS FAN MEASURED 5 V LOGIC (control-board MCU rail = 5 V). Therefore:
+#   - GPIO3 mirror input needs a RESISTOR DIVIDER (keep the ADC <= ~3.3 V).
+#   - GPIO4 output needs LEVEL TRANSLATION 3.3 V -> 5 V (74AHCT125 / BSS138).
+#     See BUILD_GUIDE.md section 2d (the 5 V variant). A series resistor is NOT
+#     protection. (Confirm the PWM pin itself peaks at 5 V to be fully certain.)
 #   - Add a ~10 k pull-down from the MOTOR-side PWM to GND so the driver sees LOW
 #     (motor off) whenever the ESP is unpowered/resetting (GPIO4 is hi-Z then).
 # Wiring + derivation: see ../BUILD_GUIDE.md and ../HA_MOD_NOTES.md.
@@ -25,10 +25,10 @@ substitutions:
   name: heran-fan
   friendly_name: "Heran Fan"
   # ---- CALIBRATE to YOUR measurements (see HA_MOD_NOTES.md Section 4) ----
-  min_duty: "0.24"        # L1 duty  = lowest speed that reliably spins
-  max_duty: "0.90"        # L12 duty = max speed
+  min_duty: "0.16"        # L1 duty @5V = lowest speed that reliably spins
+  max_duty: "0.60"        # L12 duty @5V = max speed
   pwm_freq: "10000Hz"     # driver reads the PWM average; try 1000/5000/20000 if no response
-  adc_max_v: "2.90"       # ADC volts read at MAX stock speed (L12) after the RC filter.
+  adc_max_v: "1.50"       # ADC volts at MAX (L12) AFTER the RC+divider (~5V/2). CALIBRATE.
                           #   Read the "Stock PWM (avg)" sensor at L12 and put it here.
   handback_delta: "0.03"  # stock-duty change that hands control back to the panel
 
