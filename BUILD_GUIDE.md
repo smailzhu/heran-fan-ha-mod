@@ -42,7 +42,7 @@ Measurements this relies on (multimeter DC averages — logic level/frequency st
 | 7 | Capacitor **1 µF** (×1) | RC low-pass to GND on the GPIO3 input (with the 10 kΩ above) |
 | 8 | **Fuse 0.5 A** + inline holder | on the +24 V tap |
 | 9 | Hook-up wire, heatshrink, JST/Dupont | to interpose on `CN2` |
-| 10 | *(optional)* **BSS138 level-shifter** + 2× **10 kΩ** (divider) | only if the PWM turns out to be 5 V |
+| 10 | *(optional, 5 V case)* **level shifter 3.3→5 V** (74AHCT125 preferred, or BSS138 module) + 2× **10 kΩ** divider | only if the PWM measures 5 V (see §2d) |
 | 11 | *(optional)* 5-pin JST male+female **matching CN2** | reversible inline interposer (see §2b) |
 
 **Tools:** multimeter (ideally Hz/duty), soldering iron, wire strippers, heatshrink;
@@ -182,6 +182,58 @@ flowchart LR
 **Key:** the `PWM` wire is **cut** — the control-board side feeds the ESP's ADC
 (`GPIO3`) and the motor side is driven by the ESP (`GPIO4`). Everything on the
 "Added" side lives on the **isolated 24 V secondary**; never bridge mains.
+
+### If the PWM turns out to be 5 V (level-shifted variant)
+
+If Section 4 shows the stock PWM high level is **5 V** (the control board has a
+"+5 V" rail, so this is plausible), the 3.3 V-direct wiring above is **not safe**
+— the ESP32-C3 is 3.3 V. Two changes:
+
+1. **GPIO3 mirror input:** add a **resistor divider** so the ADC never exceeds
+   ~3.3 V. Reuse the RC parts as a combined filter + divider:
+   `PWM —10 kΩ— (node) —10 kΩ— GND`, with the **1 µF from node → GND**. That
+   halves 5 V → ~2.5 V at GPIO3 and low-passes it. Calibrate `adc_max_v` to the
+   divided reading at L12.
+2. **GPIO4 output:** the driver wants 5 V, so **level-translate 3.3 V → 5 V**.
+   Cleanest is a **74AHCT125** (TTL-threshold input reads 3.3 V as HIGH, drives a
+   full push-pull 5 V output); a **BSS138** level-shifter module also works at this
+   low PWM rate. Power its HV side from the **5 V buck**. Keep the **10 kΩ
+   pull-down on the motor-side** (5 V domain) for fail-safe.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{
+  "fontSize":"14px",
+  "primaryColor":"#eef2ff","primaryTextColor":"#111111","primaryBorderColor":"#3355aa",
+  "secondaryColor":"#e8f5e9","tertiaryColor":"#fff8e1",
+  "lineColor":"#555555","textColor":"#111111",
+  "clusterBkg":"#f6f6f6","clusterBorder":"#888888",
+  "edgeLabelBackground":"#ffffff"
+}}}%%
+flowchart LR
+    subgraph FAN["Fan — stock parts (5 V logic)"]
+        CTRL["Control board<br/>PWM = 5 V"]
+        DRV["In-motor driver<br/>(expects 5 V PWM)"]
+    end
+    subgraph MOD["Added — 24 V isolated secondary only"]
+        BUCK["buck 24&rarr;5 V"]
+        ESP["ESP32-C3<br/>(3.3 V I/O)"]
+        DIV["RC + divider<br/>10k series · 10k&rarr;GND · 1µF&rarr;GND"]
+        LS["level shifter 3.3&rarr;5 V<br/>74AHCT125 / BSS138<br/>(HV = 5 V)"]
+        R100["100 Ω"]
+        PD["10k pull-down&rarr;GND"]
+    end
+    BUCK -->|"5 V"| ESP
+    BUCK -->|"5 V (HV rail)"| LS
+    CTRL -->|"PWM 5 V (ctrl side, CUT)"| DIV
+    DIV -->|"&le;3.3 V &rarr; GPIO3 (ADC)"| ESP
+    ESP -->|"GPIO4 (3.3 V)"| LS
+    LS -->|"5 V PWM"| R100
+    R100 -->|"PWM (motor side)"| DRV
+    R100 --> PD
+```
+
+Oscillation (SW5 tap), power (buck off +24 V), and common ground are **unchanged**
+from the main diagram — only the PWM in/out paths differ.
 
 ## 2d. Assembly — bench-test first, then make it permanent
 
