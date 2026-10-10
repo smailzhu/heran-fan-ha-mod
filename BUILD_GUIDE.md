@@ -279,6 +279,50 @@ Two equally good styles for this small parts count:
 - Secure the module in the base with hot glue / foam tape; keep the ESP antenna
   away from metal; leave USB reachable or rely on **OTA** for future updates.
 
+## 2e. Perfboard layout (your kit, 5 V build)
+
+Suggested arrangement on the **20×80 mm** perfboard for the **5 V variant** with the
+parts you have. The **net list below is the part that must be exact**; the hole
+positions are just a sensible placement. The **MP1584 buck** is a separate module
+wired to the board's rails. (Your **PC817 is SMD** — mount it on a tiny SOIC/DIP
+breakout or "dead-bug" it; everything else is through-hole.)
+
+```
+ PERFBOARD 20x80 mm  — top view, length left→right (not exact scale)
+ +5V rail ●──────────────────────── +5 V ───────────────────────────────●
+          │  ZONE 1      │  ZONE 2        │  ZONE 3           │  ZONE 4
+          │  ESP32-C3    │  74AHCT125     │  PC817 + passives │  edge header
+          │  SuperMini   │  (level shift) │  (RC/divider,     │  (off-board
+          │  (3.3 V)     │                │   330Ω, 100Ω,10k) │   wires)
+ GND rail ●──────────────────────── GND ────────────────────────────────●
+
+   MP1584 buck (separate module):  24V-in (fused) ─▶ IN+/IN- ;  OUT+→+5V rail, OUT-→GND rail
+```
+
+### Net list (wire these exactly)
+| Net | Connects |
+|-----|----------|
+| **+5 V** | buck OUT+ · 74AHCT125 pin14 (Vcc) · **ESP `5V` pin** |
+| **GND** (common) | buck OUT− · ESP `GND` · 74AHCT125 pin7 **and pin1 (1OE→GND, enables buffer)** · PC817 pin2 · divider-bottom 10 kΩ · RC 1 µF · motor-side 10 kΩ · CN2 GND |
+| **Stock PWM in** (5 V, from CN2 ctrl-side) | → **10 kΩ series** → node **X** |
+| **node X** (divided+filtered) | → 10 kΩ → GND · → 1 µF → GND · → **ESP `GPIO3`** |
+| **ESP `GPIO4`** (3.3 V PWM) | → 74AHCT125 **1A (pin2)** |
+| **74AHCT125 1Y (pin3)** (5 V PWM) | → **100 Ω** → **PWM-motor** (to driver) ; PWM-motor → **10 kΩ → GND** |
+| **ESP `GPIO5`** | → **330 Ω** → PC817 **pin1** (LED anode) |
+| **PC817 pin3/pin4** (transistor) | across the **SW5** button pads (pin4=collector→MCU-side, pin3=emitter→GND-side; swap if it doesn't trigger) |
+| unused 74AHCT125 inputs | tie **pins 4, 10, 13 (2A/3A/4A) and 6/8/12 OEs** per datasheet — simplest: tie all unused inputs to **GND** |
+
+### Off-board wires (to the Zone 4 header)
+1. **PWM-ctrl** — from the cut `CN2` PWM (control-board side)
+2. **PWM-motor** — to the cut `CN2` PWM (motor side / driver)
+3. **+24 V** — from `CN2` +24 V → **fuse** → buck IN+
+4. **GND** — from `CN2` GND
+5. **SW5-a / SW5-b** — two wires to the SW5 button pads
+*(OSC-A/OSC-B stay in the fan harness — they do **not** come to this board.)*
+
+> Keep the ESP on **female headers** so it stays removable/reflashable. Verify the
+> buck is set to **5.0 V** before connecting anything. One common ground throughout.
+
 ## 3. ESPHome configuration
 
 The **single source of truth is [`esphome/heran-fan.yaml`](esphome/heran-fan.yaml)**
