@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" font-family="Helvetica,Arial,sans-serif">
+  <rect x="0" y="0" width="1200" height="560" fill="#ffffff"/>
+  <text x="600" y="28" text-anchor="middle" font-size="20" font-weight="bold" fill="#111">Heran fan 5 V build - hole-accurate placement (20x80 mm, 30 x 8 holes)</text>
+  <text x="600" y="48" text-anchor="middle" font-size="12" fill="#a33">SUGGESTED placement - verify footprints/pitch against YOUR parts before soldering. Dashed = back-side jumper. Net list in BUILD_GUIDE §2e is authoritative.</text>
+
+  <!-- board -->
+  <rect x="62" y="150" width="1028" height="282" rx="8" fill="#eef5ef" stroke="#4a7d5a" stroke-width="2"/>
+
+  <!-- hole grid 30 cols x 8 rows : cx=90+(c-1)*34, cy=170+(r-1)*34 -->
+  <g fill="#b7c9bd">
+    <!-- generated dots -->
+    <g id="dots"></g>
+  </g>
+  <!-- draw dots explicitly -->
+  <g fill="#b7c9bd">
+    <!-- rows -->
+    <!-- row1..8 at y=170,204,238,272,306,340,374,408 ; cols x=90..1076 step34 -->
+    <!-- To keep file compact, dots drawn as a pattern overlay instead -->
+  </g>
+  <defs>
+    <pattern id="h" width="34" height="34" patternUnits="userSpaceOnUse" patternTransform="translate(90,170)">
+      <circle cx="0" cy="0" r="2.3" fill="#b7c9bd"/>
+    </pattern>
+  </defs>
+  <rect x="78" y="158" width="1006" height="268" fill="url(#h)"/>
+
+  <!-- power busses: row1 (+5V, y=170) red ; row8 (GND, y=408) black -->
+  <line x1="90" y1="170" x2="1076" y2="170" stroke="#d11" stroke-width="3"/>
+  <text x="96" y="165" font-size="11" font-weight="bold" fill="#d11">+5 V bus (row 1)</text>
+  <line x1="90" y1="408" x2="1076" y2="408" stroke="#111" stroke-width="3"/>
+  <text x="96" y="424" font-size="11" font-weight="bold" fill="#111">GND bus (row 8)</text>
+
+  <!-- ===================== ESP32-C3 (cols2-9, rows2 & 7) ===================== -->
+  <rect x="110" y="190" width="266" height="198" rx="6" fill="#e8eeff" stroke="#2d50a8" stroke-width="2" fill-opacity="0.75"/>
+  <text x="243" y="296" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d50a8">ESP32-C3 SuperMini</text>
+  <text x="243" y="314" text-anchor="middle" font-size="10" fill="#333">(on female headers)</text>
+  <!-- top-row pins r2 (y204): c2..c9 x=124,158,192,226,260,294,328,362 -->
+  <g font-size="9" fill="#111" text-anchor="middle">
+    <circle cx="124" cy="204" r="4.5" fill="#d11"/><text x="124" y="226">5V</text>
+    <circle cx="158" cy="204" r="4.5" fill="#111"/><text x="158" y="226">G</text>
+    <circle cx="192" cy="204" r="4" fill="#889"/><text x="192" y="226">3V3</text>
+    <circle cx="226" cy="204" r="4.5" fill="#2d50a8"/><text x="226" y="226">IO4</text>
+    <circle cx="260" cy="204" r="4.5" fill="#e67e22"/><text x="260" y="226">IO3</text>
+    <circle cx="294" cy="204" r="3.5" fill="#889"/>
+    <circle cx="328" cy="204" r="3.5" fill="#889"/>
+    <circle cx="362" cy="204" r="3.5" fill="#889"/>
+  </g>
+  <!-- bottom-row pins r7 (y374) -->
+  <g font-size="9" fill="#111" text-anchor="middle">
+    <circle cx="124" cy="374" r="4.5" fill="#1a8f3c"/><text x="124" y="364">IO5</text>
+    <circle cx="158" cy="374" r="3.5" fill="#889"/><circle cx="192" cy="374" r="3.5" fill="#889"/>
+    <circle cx="226" cy="374" r="3.5" fill="#889"/><circle cx="260" cy="374" r="3.5" fill="#889"/>
+    <circle cx="294" cy="374" r="3.5" fill="#889"/><circle cx="328" cy="374" r="3.5" fill="#889"/>
+    <circle cx="362" cy="374" r="3.5" fill="#889"/>
+  </g>
+  <!-- ESP power jumpers -->
+  <line x1="124" y1="204" x2="124" y2="170" stroke="#d11" stroke-width="2"/>
+  <path fill="none" d="M158,204 L158,420 L120,420 L120,408" stroke="#111" stroke-width="1.6" stroke-dasharray="5,4"/>
+
+  <!-- ===================== 74AHCT125 DIP-14 (cols11-17, rows3 & 6) ===================== -->
+  <rect x="416" y="224" width="232" height="130" rx="6" fill="#eafaf0" stroke="#1a8f3c" stroke-width="2" fill-opacity="0.75"/>
+  <text x="532" y="286" text-anchor="middle" font-size="13" font-weight="bold" fill="#1a8f3c">74AHCT125 (DIP-14)</text>
+  <!-- bottom row r6 (y340): c11..c17 x=430,464,498,532,566,600,634 ; pins1..7 -->
+  <g font-size="9" fill="#111" text-anchor="middle">
+    <circle cx="430" cy="340" r="4.5" fill="#111"/><text x="430" y="358">1 OE</text>
+    <circle cx="464" cy="340" r="4.5" fill="#2d50a8"/><text x="464" y="358">2 A</text>
+    <circle cx="498" cy="340" r="4.5" fill="#7a3fb0"/><text x="498" y="358">3 Y</text>
+    <circle cx="532" cy="340" r="3.5" fill="#889"/>
+    <circle cx="566" cy="340" r="3.5" fill="#889"/>
+    <circle cx="600" cy="340" r="3.5" fill="#889"/>
+    <circle cx="634" cy="340" r="4.5" fill="#111"/><text x="634" y="358">7 G</text>
+  </g>
+  <!-- top row r3 (y238): pins 14..8 -->
+  <g font-size="9" fill="#111" text-anchor="middle">
+    <circle cx="430" cy="238" r="4.5" fill="#d11"/><text x="430" y="230">14 Vcc</text>
+  </g>
+  <line x1="430" y1="238" x2="430" y2="170" stroke="#d11" stroke-width="2"/>
+  <path fill="none" d="M634,340 L634,408" stroke="#111" stroke-width="1.6"/>
+  <path fill="none" d="M430,340 L410,340 L410,408" stroke="#111" stroke-width="1.4" stroke-dasharray="5,4"/>
+  <!-- GPIO4 -> 1A (back jumper) -->
+  <path fill="none" d="M226,204 L226,160 L464,160 L464,340" stroke="#2d50a8" stroke-width="1.8" stroke-dasharray="5,4"/>
+  <text x="300" y="155" font-size="10" fill="#2d50a8">GPIO4 -&gt; 1A</text>
+
+  <!-- 100 ohm r6 c15-16, then 1Y -> 100 -> PWM-motor -->
+  <rect x="552" y="332" width="60" height="16" rx="3" fill="#f3e8ff" stroke="#7a3fb0"/>
+  <text x="582" y="328" text-anchor="middle" font-size="9" fill="#7a3fb0">100&#937;</text>
+  <path fill="none" d="M498,340 L552,340" stroke="#7a3fb0" stroke-width="1.8"/>
+  <path fill="none" d="M612,340 L700,340 L700,272 L1076,272" stroke="#7a3fb0" stroke-width="1.8"/>
+  <!-- pulldown 10k at c18 -->
+  <rect x="660" y="356" width="16" height="44" rx="3" fill="#fff" stroke="#111"/>
+  <text x="684" y="382" font-size="9" fill="#111">10k</text>
+  <path fill="none" d="M668,340 L668,356" stroke="#111" stroke-width="1.4"/><path fill="none" d="M668,400 L668,408" stroke="#111" stroke-width="1.4"/>
+  <path fill="none" d="M612,340 L668,340" stroke="#7a3fb0" stroke-width="1.2" stroke-dasharray="3,3"/>
+
+  <!-- ===================== PC817 breakout (cols12-13, rows7-8) ===================== -->
+  <rect x="450" y="360" width="84" height="62" rx="5" fill="#fdeef0" stroke="#b02a4a" stroke-width="2" fill-opacity="0.8"/>
+  <text x="492" y="388" text-anchor="middle" font-size="10" font-weight="bold" fill="#b02a4a">PC817</text>
+  <g font-size="8" fill="#111" text-anchor="middle">
+    <circle cx="464" cy="374" r="4" fill="#1a8f3c"/><text x="454" y="370">1</text>
+    <circle cx="464" cy="408" r="4" fill="#111"/>
+    <circle cx="498" cy="374" r="4" fill="#8a5a2b"/><text x="508" y="370">4</text>
+    <circle cx="498" cy="408" r="4" fill="#8a5a2b"/>
+  </g>
+  <!-- 330 ohm r7 c10-11 , GPIO5 -> 330 -> opto1 -->
+  <rect x="388" y="366" width="44" height="16" rx="3" fill="#eafaf0" stroke="#1a8f3c"/>
+  <text x="410" y="362" text-anchor="middle" font-size="9" fill="#1a8f3c">330&#937;</text>
+  <path fill="none" d="M124,374 L124,388 L388,388 L388,374" stroke="#1a8f3c" stroke-width="1.8" stroke-dasharray="5,4"/>
+  <path fill="none" d="M432,374 L464,374" stroke="#1a8f3c" stroke-width="1.8"/>
+  <text x="210" y="400" font-size="10" fill="#1a8f3c">GPIO5 -&gt; 330 -&gt; opto</text>
+  <!-- opto outputs to SW5 header (col30 r6,r7) -->
+  <path fill="none" d="M498,374 L720,374 L720,340 L1076,340" stroke="#8a5a2b" stroke-width="1.6"/>
+  <path fill="none" d="M498,408 L740,408 L740,374 L1076,374" stroke="#8a5a2b" stroke-width="1.6"/>
+
+  <!-- ===================== divider/RC near header (cols 24-27, row2) ===================== -->
+  <rect x="872" y="196" width="40" height="16" rx="3" fill="#fff" stroke="#e67e22"/><text x="892" y="192" text-anchor="middle" font-size="9" fill="#e67e22">10k</text>
+  <circle cx="838" cy="204" r="4" fill="#e67e22"/><text x="838" y="226" font-size="8" text-anchor="middle" fill="#111">nX</text>
+  <path fill="none" d="M1076,204 L912,204" stroke="#e67e22" stroke-width="1.8"/>
+  <path fill="none" d="M872,204 L838,204" stroke="#e67e22" stroke-width="1.8"/>
+  <path fill="none" d="M838,204 L838,140 L260,140 L260,204" stroke="#e67e22" stroke-width="1.8" stroke-dasharray="5,4"/>
+  <text x="520" y="135" font-size="10" fill="#e67e22">node X -&gt; GPIO3 (divided)</text>
+  <rect x="800" y="220" width="16" height="44" rx="3" fill="#fff" stroke="#111"/><text x="782" y="246" font-size="9" fill="#111">10k</text>
+  <path fill="none" d="M808,204 L808,220" stroke="#111" stroke-width="1.4"/><path fill="none" d="M808,264 L808,408" stroke="#111" stroke-width="1.4"/>
+  <path fill="none" d="M838,204 L808,204" stroke="#111" stroke-width="1.2" stroke-dasharray="3,3"/>
+  <rect x="834" y="220" width="16" height="44" rx="3" fill="#fff" stroke="#111"/><text x="856" y="246" font-size="9" fill="#111">1uF</text>
+  <path fill="none" d="M842,204 L842,220" stroke="#111" stroke-width="1.2"/><path fill="none" d="M842,264 L842,408" stroke="#111" stroke-width="1.2"/>
+
+  <!-- ===================== MP1584 buck module (cols 19-22, rows3-6) ===================== -->
+  <rect x="690" y="224" width="120" height="96" rx="6" fill="#fff3e0" stroke="#b36b00" stroke-width="2" fill-opacity="0.8"/>
+  <text x="750" y="258" text-anchor="middle" font-size="11" font-weight="bold" fill="#b36b00">MP1584 buck</text>
+  <text x="750" y="274" text-anchor="middle" font-size="9" fill="#333">module (24-&gt;5.0 V)</text>
+  <g font-size="8" fill="#111">
+    <circle cx="700" cy="306" r="4" fill="#d11"/><text x="706" y="302">24in+</text>
+    <circle cx="800" cy="306" r="4" fill="#111"/>
+    <circle cx="700" cy="238" r="4" fill="#d11"/><text x="706" y="234">5out+</text>
+    <circle cx="800" cy="238" r="4" fill="#111"/>
+  </g>
+  <path fill="none" d="M700,238 L700,170" stroke="#d11" stroke-width="2"/>
+  <path fill="none" d="M800,306 L800,408" stroke="#111" stroke-width="1.4"/>
+  <path fill="none" d="M800,238 L820,238 L820,408" stroke="#111" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <path fill="none" d="M700,306 L670,306 L670,272 L1076,272" stroke="#d11" stroke-width="1.4" stroke-dasharray="5,4"/>
+  <text x="705" y="320" font-size="8" fill="#d11">24in+ &lt;- +24V hdr</text>
+
+  <!-- ===================== off-board header (col30, rows2-7) ===================== -->
+  <g font-size="9" fill="#111">
+    <circle cx="1076" cy="204" r="5" fill="#e67e22"/><text x="1086" y="207">PWM-ctrl</text>
+    <circle cx="1076" cy="272" r="5" fill="#7a3fb0"/><text x="1086" y="275">PWM-motor / +24V</text>
+    <circle cx="1076" cy="306" r="5" fill="#111"/><text x="1086" y="309">GND</text>
+    <circle cx="1076" cy="340" r="5" fill="#8a5a2b"/><text x="1086" y="343">SW5-a</text>
+    <circle cx="1076" cy="374" r="5" fill="#8a5a2b"/><text x="1086" y="377">SW5-b</text>
+  </g>
+
+  <!-- legend -->
+  <g font-size="11">
+    <text x="78" y="452" font-weight="bold" fill="#111">Legend:</text>
+    <line x1="140" y1="448" x2="168" y2="448" stroke="#444" stroke-width="2"/><text x="174" y="452" fill="#111">front link</text>
+    <line x1="250" y1="448" x2="278" y2="448" stroke="#444" stroke-width="2" stroke-dasharray="5,4"/><text x="284" y="452" fill="#111">back-side jumper</text>
+    <line x1="420" y1="448" x2="448" y2="448" stroke="#d11" stroke-width="3"/><text x="454" y="452" fill="#111">+5/24V</text>
+    <line x1="520" y1="448" x2="548" y2="448" stroke="#111" stroke-width="3"/><text x="554" y="452" fill="#111">GND</text>
+    <line x1="600" y1="448" x2="628" y2="448" stroke="#e67e22" stroke-width="3"/><text x="634" y="452" fill="#111">PWM in</text>
+    <line x1="700" y1="448" x2="728" y2="448" stroke="#2d50a8" stroke-width="3"/><text x="734" y="452" fill="#111">GPIO4</text>
+    <line x1="790" y1="448" x2="818" y2="448" stroke="#7a3fb0" stroke-width="3"/><text x="824" y="452" fill="#111">5V PWM</text>
+    <line x1="890" y1="448" x2="918" y2="448" stroke="#1a8f3c" stroke-width="3"/><text x="924" y="452" fill="#111">osc</text>
+    <line x1="960" y1="448" x2="988" y2="448" stroke="#8a5a2b" stroke-width="3"/><text x="994" y="452" fill="#111">SW5</text>
+  </g>
+  <text x="78" y="486" font-size="11" fill="#555">Grey pins = unused module pins. ESP + buck are modules on headers; only the DIP shifter, PC817 breakout, resistors and cap sit in the grid.</text>
+  <text x="78" y="504" font-size="11" fill="#555">PWM-motor and +24V share the row-4 header label here for space; wire them to separate CN2 pins (see §2b/§2e).</text>
+</svg>
