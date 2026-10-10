@@ -16,7 +16,7 @@ the reverse-engineering behind it.
 buttons · §6 optional.
 
 **Design in one line:** ESP32-C3 takes over **speed** by driving the motor
-driver's **logic-level PWM** (likely 3.3 V — **verify first**), and controls
+driver's **5 V logic PWM** (MCU rail measured 5 V — via a level shifter), and controls
 **oscillation** by "tapping"
 the stock **SW5 (摇头)** button through an optocoupler (the stock board keeps
 generating the AC the synchronous oscillation motor needs).
