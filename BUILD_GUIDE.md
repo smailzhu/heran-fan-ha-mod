@@ -1,11 +1,12 @@
 # Heran/Hanny Fan → Home Assistant — Build Guide (ESP32-C3)
 
-> 🚧 **Status: work in progress — not yet hardware-tested.** Values below come
-> from multimeter DC-average readings; the **PWM logic level (3.3 vs 5 V) and
-> frequency are unverified**. **Before wiring:** identify your board/harness,
-> confirm mains↔secondary isolation, and measure the actual PWM high level and
-> waveform (Section 4 / `HA_MOD_NOTES.md`). A series resistor is not overvoltage
-> protection.
+> 🚧 **Status: firmware runs on the ESP; fan hardware not built yet.** The
+> ESPHome firmware is flashed and running on an ESP32-C3 (Wi-Fi/API verified).
+> PWM is **confirmed 5 V logic** (MCU rail = 5 V); its frequency is still
+> unmeasured and the motor hasn't been driven end-to-end. **Before wiring:**
+> identify your board/harness, confirm mains↔secondary isolation, and measure the
+> actual PWM waveform on *your* unit (Section 4). A series resistor is not
+> overvoltage protection.
 
 Build notes for the **hybrid** control design derived from the teardown +
 multimeter measurements. See `NOTES.md`, `pcb_2/NOTES.md`, `HA_MOD_NOTES.md` for
@@ -280,6 +281,11 @@ Two equally good styles for this small parts count:
   away from metal; leave USB reachable or rely on **OTA** for future updates.
 
 ## 2e. Perfboard layout (your kit, 5 V build)
+
+> **Rendered diagrams (view on GitHub):**
+> [`build/perfboard_layout.svg`](build/perfboard_layout.svg) (schematic wiring) and
+> [`build/perfboard_footprint.svg`](build/perfboard_footprint.svg) (hole-accurate
+> placement).
 
 Suggested arrangement on the **20×80 mm** perfboard for the **5 V variant** with the
 parts you have. The **net list below is the part that must be exact**; the hole

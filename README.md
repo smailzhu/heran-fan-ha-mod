@@ -7,11 +7,12 @@ entity with **continuously variable speed** and **oscillation**, while the
 This is done with a small **ESP32-C3** that taps into the fan's internal
 low‑voltage control bus. No cloud, no app — local ESPHome + Home Assistant.
 
-> 🚧 **Status — work in progress, NOT yet hardware-tested.** The teardown,
-> measurements, and firmware are complete on paper, but nothing has been
-> bench/hardware-validated yet. In particular the **PWM logic level (3.3 vs 5 V)
-> and frequency are unverified** — you must measure them on your own fan before
-> wiring. Treat every value here as a starting point, not a proven fact.
+> 🚧 **Status — firmware runs; fan hardware not built yet.** The teardown and
+> measurements are done, and the ESPHome firmware is **flashed and running on an
+> ESP32-C3 (boots, joins Wi-Fi, API up, OTA-capable)**. **Not** done yet: the
+> **5 V level-shifter/divider hardware and the wiring into the fan**, so the motor
+> has **not** been driven end-to-end. PWM is **confirmed 5 V logic** (MCU rail);
+> its frequency is still unmeasured. Verify on your own fan before wiring.
 >
 > ⚠️ **Safety:** the fan's power board is mains-powered. This mod only touches the
 > **isolated 24 V secondary** side — **never** the mains/SMPS primary. If you are
@@ -128,6 +129,9 @@ esphome/
   heran-fan.yaml     – ready-to-flash ESPHome config (Option B)
   secrets.yaml.example
 esp32/               – ESP32-C3 SuperMini board photos + pinout notes
+build/               – parts-kit photos + inventory, and the perfboard diagrams:
+  perfboard_layout.svg    – wiring diagram (schematic style)
+  perfboard_footprint.svg – hole-accurate placement
 pcb_1/               – control + power board photos
 pcb_2/               – fan-head motor driver + motor photos
 ```
@@ -141,7 +145,9 @@ Reverse-engineering and measurements are **done** (see `HA_MOD_NOTES.md`):
   Needs a divider + 3.3→5 V level shifter (BUILD_GUIDE §2d). Confirm the PWM pin
   peak and frequency before wiring.
 - Oscillation: `TYJ50-8` AC synchronous, symmetric ~50/60 Hz (~16.5 V), reused via SW5.
-- Firmware: Option B config provided; **bench/hardware bring-up in progress**.
+- Firmware: **flashed & running on an ESP32-C3** — boots, joins Wi-Fi, API up
+  (OTA-capable). Remaining: build the 5 V level-shifter hardware, wire into the
+  fan, and drive the motor end-to-end.
 
 Contributions welcome — if you have the same (or a similar) fan, PRs with your
 measurements, board photos, and tweaks are appreciated. See

@@ -7,3 +7,6 @@ esphome/.esphome/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# agent harness config
+.pi/
