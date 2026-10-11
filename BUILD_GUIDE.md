@@ -356,6 +356,22 @@ itself; the dashed "back-side" links in the footprint diagram):
 - the **buck** module's wire connections, plus a dab of strain relief where the
   harness enters
 
+### Heatshrink sizes (use 2:1 ratio)
+Pick an ID ~1.5-2x the joint's widest point (2:1 shrinks to half, so it slides on
+then grips). Simplest: buy a **2:1 assortment kit (~1.5-8 mm, assorted colors)**;
+or individually get **2 / 3 / 5 mm**.
+
+| Where | Size (pre-shrink ID) |
+|-------|----------------------|
+| Signal/jumper wire joints (26-30 AWG) | **2 mm** |
+| Off-board stranded wires (24-26 AWG) - SW5, PWM, GND | **3 mm** |
+| Wire-to-wire splices (cut-PWM, +24 V/GND taps) | **3-4 mm** |
+| Over an inline 1/4 W resistor body | **4-5 mm** |
+| Inline fuse-holder leads / small bundle / strain relief | **5-6 mm** |
+
+(3:1 adhesive-lined tubing is a nice upgrade at the harness strain-relief spots,
+but not required.)
+
 ## 3. ESPHome configuration
 
 The **single source of truth is [`esphome/heran-fan.yaml`](esphome/heran-fan.yaml)**
