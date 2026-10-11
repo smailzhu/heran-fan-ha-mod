@@ -323,6 +323,39 @@ breakout or "dead-bug" it; everything else is through-hole.)
 > Keep the ESP on **female headers** so it stays removable/reflashable. Verify the
 > buck is set to **5.0 V** before connecting anything. One common ground throughout.
 
+## 2f. Where to use wire vs. heatshrink
+
+**Rule of thumb:** a wire *between two holes on the board* is hook-up wire with
+**no** heatshrink (the holes hold it). A joint *out in the open* (harness splice,
+inline fuse, inline resistor, off-board run) gets **heatshrink on each joint**.
+
+### Hook-up wire
+**Solid-core (26-28 AWG) — on the perfboard** (the jumpers the board can't make
+itself; the dashed "back-side" links in the footprint diagram):
+- `GPIO4 -> 74AHCT125 1A`
+- `node X (divider) -> GPIO3`
+- `GPIO5 -> 330 ohm -> PC817`
+- `1Y -> 100 ohm -> PWM-motor`, and the `10k pull-down -> GND`
+- `PC817 collector/emitter -> SW5 pads`
+- power: ESP `5V`->+5 V rail, ESP `GND`->GND rail, shifter `Vcc`->+5 V,
+  shifter `GND/1OE`->GND, buck out -> rails
+- (very short adjacent links can just use cut-off **resistor legs** instead)
+
+**Stranded / silicone wire - off the board** (the ~6-7 wires to the fan):
+- `CN2` PWM control-side -> board ; board -> `CN2` PWM motor-side
+- `CN2` +24 V -> fuse -> buck ; `CN2` GND -> board
+- SW5-a and SW5-b -> board ; buck <-> board power (if buck sits off to the side)
+
+### Heatshrink (insulate + strain-relief) - on flying joints only
+- the **two cut-PWM splices** in the `CN2` harness (control-side + motor-side) (§2b)
+- the **+24 V tap and inline fuse** joints, and the **GND tap**
+- the **SW5** two wire-to-pad joints
+- **any resistor soldered inline in a flying wire** (e.g. 100 ohm / 330 ohm, if not
+  placed on the board) - shrink over the body
+- the **SMD PC817 leads** if you dead-bug it instead of using a breakout
+- the **buck** module's wire connections, plus a dab of strain relief where the
+  harness enters
+
 ## 3. ESPHome configuration
 
 The **single source of truth is [`esphome/heran-fan.yaml`](esphome/heran-fan.yaml)**
