@@ -294,7 +294,7 @@ wired to the board's rails. (Your **PC817 is SMD** — mount it on a tiny SOIC/D
 breakout or "dead-bug" it; everything else is through-hole.)
 
 ```
- PERFBOARD 20x80 mm  — top view, length left→right (not exact scale)
+ PERFBOARD 7x3 cm (24x10 holes) — top view (not exact scale)
  +5V rail ●──────────────────────── +5 V ───────────────────────────────●
           │  ZONE 1      │  ZONE 2        │  ZONE 3           │  ZONE 4
           │  ESP32-C3    │  74AHCT125     │  PC817 + passives │  edge header
