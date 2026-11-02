@@ -290,8 +290,7 @@ Two equally good styles for this small parts count:
 Suggested arrangement on the **7×3 cm (24×10-hole)** perfboard for the **5 V variant** with the
 parts you have. The **net list below is the part that must be exact**; the hole
 positions are just a sensible placement. The **MP1584 buck** is a separate module
-wired to the board's rails. (Your **PC817 is SMD** — mount it on a tiny SOIC/DIP
-breakout or "dead-bug" it; everything else is through-hole.)
+wired to the board's rails. (Your **PC817 is DIP-4** — it plugs straight into the grid; everything is through-hole.)
 
 ```
  PERFBOARD 7x3 cm (24x10 holes) — top view (not exact scale)
@@ -358,7 +357,7 @@ itself; the dashed "back-side" links in the footprint diagram):
 - the **SW5** two wire-to-pad joints
 - **any resistor soldered inline in a flying wire** (e.g. 100 ohm / 330 ohm, if not
   placed on the board) - shrink over the body
-- the **SMD PC817 leads** if you dead-bug it instead of using a breakout
+- the **PC817 leads only if** you wire it off-board (DIP-4 normally sits in the grid)
 - the **buck** module's wire connections, plus a dab of strain relief where the
   harness enters
 

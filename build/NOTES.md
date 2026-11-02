@@ -8,7 +8,7 @@ the BOM in [`../BUILD_GUIDE.md`](../BUILD_GUIDE.md) §1.
 |------|-------|
 | ESP32-C3 SuperMini | already flashed with the firmware (not in these photos) |
 | MP1584 **24→5 V buck** | `parts_kit.jpg` — set output to **5.0 V** before use |
-| **PC817 optocoupler** | the small black 4-pin part — looks **SMD**; usable but fiddlier on perfboard than the DIP version |
+| **PC817 optocoupler** | the small black 4-pin part — confirmed **DIP-4** (PC817C/LTV817C) — drops straight into the perfboard |
 | Through-hole **resistors** (3 values) | three bagged values — **confirm they are 330 Ω, 100 Ω, 10 kΩ** (need ≥2× 10 kΩ) |
 | **Capacitors** (yellow) | **confirm one is 1 µF** (the RC-filter cap) |
 | **Glass fuses** | present — **confirm ~0.5 A rating** |

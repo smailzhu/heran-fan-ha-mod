@@ -79,7 +79,7 @@
   <path fill="none" d="M724,326 L724,344" stroke="#111" stroke-width="1.4"/><path fill="none" d="M724,392 L724,434" stroke="#111" stroke-width="1.4"/>
   <path fill="none" d="M660,326 L724,326" stroke="#7a3fb0" stroke-width="1.1" stroke-dasharray="3,3"/>
 
-  <!-- ===================== PC817 breakout (cols13-14 rows8-9) ===================== -->
+  <!-- ===================== PC817 (DIP-4) (cols13-14 rows8-9) ===================== -->
   <rect x="500" y="356" width="90" height="66" rx="5" fill="#fdeef0" stroke="#b02a4a" stroke-width="2" fill-opacity="0.8"/>
   <text x="545" y="384" text-anchor="middle" font-size="10" font-weight="bold" fill="#b02a4a">PC817</text>
   <g font-size="8" fill="#111" text-anchor="middle">
@@ -148,7 +148,7 @@
     <line x1="120" y1="512" x2="148" y2="512" stroke="#1a8f3c" stroke-width="3"/><text x="154" y="516" fill="#111">oscillation</text>
     <line x1="250" y1="512" x2="278" y2="512" stroke="#8a5a2b" stroke-width="3"/><text x="284" y="516" fill="#111">SW5 tap</text>
   </g>
-  <text x="62" y="548" font-size="11" fill="#555">Grey = unused module pins. ESP + buck are modules on headers; only the DIP, PC817 breakout, resistors and cap sit in the grid.</text>
+  <text x="62" y="548" font-size="11" fill="#555">Grey = unused module pins. ESP + buck are modules on headers; only the DIP, PC817 (DIP-4), resistors and cap sit in the grid.</text>
   <text x="62" y="566" font-size="11" fill="#555">Board has roomy spare columns (right of the header is free) - leave slack for strain relief. 74HC125: run buck ~4.4 V (see BUILD_GUIDE).</text>
   <text x="62" y="584" font-size="11" fill="#555">PWM-motor and +24V share a header label for space; wire them to separate CN2 pins (see §2b/§2e).</text>
 </svg>
