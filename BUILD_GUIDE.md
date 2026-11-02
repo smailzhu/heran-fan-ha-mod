@@ -280,14 +280,14 @@ Two equally good styles for this small parts count:
 - Secure the module in the base with hot glue / foam tape; keep the ESP antenna
   away from metal; leave USB reachable or rely on **OTA** for future updates.
 
-## 2e. Perfboard layout (your kit, 5 V build)
+## 2e. Perfboard layout (your kit, 5 V build — 7×3 cm / 24×10 holes)
 
 > **Rendered diagrams (view on GitHub):**
 > [`build/perfboard_layout.svg`](build/perfboard_layout.svg) (schematic wiring) and
 > [`build/perfboard_footprint.svg`](build/perfboard_footprint.svg) (hole-accurate
 > placement).
 
-Suggested arrangement on the **20×80 mm** perfboard for the **5 V variant** with the
+Suggested arrangement on the **7×3 cm (24×10-hole)** perfboard for the **5 V variant** with the
 parts you have. The **net list below is the part that must be exact**; the hole
 positions are just a sensible placement. The **MP1584 buck** is a separate module
 wired to the board's rails. (Your **PC817 is SMD** — mount it on a tiny SOIC/DIP

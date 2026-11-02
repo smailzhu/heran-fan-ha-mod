@@ -12,7 +12,7 @@ the BOM in [`../BUILD_GUIDE.md`](../BUILD_GUIDE.md) §1.
 | Through-hole **resistors** (3 values) | three bagged values — **confirm they are 330 Ω, 100 Ω, 10 kΩ** (need ≥2× 10 kΩ) |
 | **Capacitors** (yellow) | **confirm one is 1 µF** (the RC-filter cap) |
 | **Glass fuses** | present — **confirm ~0.5 A rating** |
-| **Perfboard 20×80 mm** | for the permanent build (Phase 2) ✓ |
+| **Perfboard 7×3 cm (24×10 holes)** | for the permanent build (Phase 2) ✓ — roomy, spare columns |
 
 ## ⚠️ Missing / still needed
 - **Hook-up wire** (silicone/solid) — **required**, not in the photos.
