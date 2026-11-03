@@ -45,5 +45,6 @@ silk). So the PWM is **5 V logic** → build the **§2d (5 V) variant**:
 |------|-------|
 | `parts_kit.jpg` | full kit incl. glass fuses |
 | `parts_kit_alt.jpg` | same kit, alt angle |
+| `parts_kit_full.jpg` | full kit (vision-reviewed: 74HC125, PC817 DIP-4, MP1584, fuse+holder) |
 | `../pcb_1/control_front_clear.jpg` | clear control-board front (buttons/LEDs/IR, CN1/CN2) |
 | `../pcb_1/control_back_clear.jpg` | clear control-board back (MCU, "+5V" rail) — replaces the old low-res shot |
