@@ -130,8 +130,8 @@ esphome/
   secrets.yaml.example
 esp32/               – ESP32-C3 SuperMini board photos + pinout notes
 build/               – parts-kit photos + inventory, and the perfboard diagrams:
-  perfboard_layout.svg    – wiring diagram (schematic style)
-  perfboard_footprint.svg – hole-accurate placement
+  perfboard_placement.svg – where each part/pin sits (no wires, clean)
+  perfboard_layout.svg    – schematic wiring (the connections)
 pcb_1/               – control + power board photos
 pcb_2/               – fan-head motor driver + motor photos
 ```

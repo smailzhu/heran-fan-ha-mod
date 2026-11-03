@@ -283,9 +283,10 @@ Two equally good styles for this small parts count:
 ## 2e. Perfboard layout (your kit, 5 V build — 7×3 cm / 24×10 holes)
 
 > **Rendered diagrams (view on GitHub):**
-> [`build/perfboard_layout.svg`](build/perfboard_layout.svg) (schematic wiring) and
-> [`build/perfboard_footprint.svg`](build/perfboard_footprint.svg) (hole-accurate
-> placement).
+> [`build/perfboard_placement.svg`](build/perfboard_placement.svg) — where each
+> part + pin sits on the 24×10 board (no wires, for clarity), and
+> [`build/perfboard_layout.svg`](build/perfboard_layout.svg) — the schematic
+> showing the connections. **The net list below is the authoritative wiring.**
 
 Suggested arrangement on the **7×3 cm (24×10-hole)** perfboard for the **5 V variant** with the
 parts you have. The **net list below is the part that must be exact**; the hole
