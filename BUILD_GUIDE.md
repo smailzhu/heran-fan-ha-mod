@@ -43,7 +43,7 @@ Measurements this relies on (multimeter DC averages — logic level/frequency st
 | 7 | Capacitor **1 µF** (×1) | RC low-pass to GND on the GPIO3 input (with the 10 kΩ above) |
 | 8 | **Fuse 0.5 A** + inline holder | on the +24 V tap |
 | 9 | Hook-up wire, heatshrink, JST/Dupont | to interpose on `CN2` |
-| 10 | **REQUIRED for this unit (5 V)** — **level shifter 3.3→5 V** (74AHCT125 preferred, or BSS138 module) + 2× **10 kΩ** divider | this fan measured 5 V → use the §2d wiring |
+| 10 | **REQUIRED for this unit (5 V)** — **level shifter 3.3→5 V**: you have a **74HC125** (run buck **~4.4 V**); **74HCT/74AHCT125** is the ideal drop-in (keeps 5.0 V). Plus 2× **10 kΩ** divider | this fan measured 5 V → use the §2d wiring |
 | 11 | *(optional)* 5-pin JST male+female **matching CN2** | reversible inline interposer (see §2b) |
 
 **Tools:** multimeter (ideally Hz/duty), soldering iron, wire strippers, heatshrink;
@@ -200,7 +200,7 @@ wiring to use** — the 3.3 V-direct wiring in §2c is only for units that measu
    halves 5 V → ~2.5 V at GPIO3 and low-passes it. Calibrate `adc_max_v` to the
    divided reading at L12.
 2. **GPIO4 output:** the driver wants 5 V, so **level-translate 3.3 V → 5 V**.
-   Cleanest is a **74AHCT125** (TTL-threshold input reads 3.3 V as HIGH, drives a
+   Ideal is a **74HCT/74AHCT125** (TTL-threshold input reads 3.3 V as HIGH, drives a
    full push-pull 5 V output); a **BSS138** level-shifter module also works at this
    low PWM rate. Power its HV side from the **5 V buck**. Keep the **10 kΩ
    pull-down on the motor-side** (5 V domain) for fail-safe.
@@ -223,7 +223,7 @@ flowchart LR
         BUCK["buck 24&rarr;5 V"]
         ESP["ESP32-C3<br/>(3.3 V I/O)"]
         DIV["RC + divider<br/>10k series · 10k&rarr;GND · 1µF&rarr;GND"]
-        LS["level shifter 3.3&rarr;5 V<br/>74AHCT125 / BSS138<br/>(HV = 5 V)"]
+        LS["level shifter 3.3&rarr;5 V<br/>74HC125 (HV ~4.4 V)<br/>or 74AHCT125 @5 V"]
         R100["100 Ω"]
         PD["10k pull-down&rarr;GND"]
     end
@@ -297,8 +297,8 @@ wired to the board's rails. (Your **PC817 is DIP-4** — it plugs straight into 
  PERFBOARD 7x3 cm (24x10 holes) — top view (not exact scale)
  +5V rail ●──────────────────────── +5 V ───────────────────────────────●
           │  ZONE 1      │  ZONE 2        │  ZONE 3           │  ZONE 4
-          │  ESP32-C3    │  74AHCT125     │  PC817 + passives │  edge header
-          │  SuperMini   │  (level shift) │  (RC/divider,     │  (off-board
+          │  ESP32-C3    │  74HC125       │  PC817 + passives │  edge header
+          │  SuperMini   │  (lvl shift)   │  (RC/divider,     │  (off-board
           │  (3.3 V)     │                │   330Ω, 100Ω,10k) │   wires)
  GND rail ●──────────────────────── GND ────────────────────────────────●
 
@@ -308,15 +308,15 @@ wired to the board's rails. (Your **PC817 is DIP-4** — it plugs straight into 
 ### Net list (wire these exactly)
 | Net | Connects |
 |-----|----------|
-| **+5 V** | buck OUT+ · 74AHCT125 pin14 (Vcc) · **ESP `5V` pin** |
-| **GND** (common) | buck OUT− · ESP `GND` · 74AHCT125 pin7 **and pin1 (1OE→GND, enables buffer)** · PC817 pin2 · divider-bottom 10 kΩ · RC 1 µF · motor-side 10 kΩ · CN2 GND |
+| **+5 V** | buck OUT+ · 74HC125 pin14 (Vcc) · **ESP `5V` pin** |
+| **GND** (common) | buck OUT− · ESP `GND` · 74HC125 pin7 **and pin1 (1OE→GND, enables ch.1)** · PC817 pin2 · divider-bottom 10 kΩ · RC 1 µF · motor-side 10 kΩ · CN2 GND |
 | **Stock PWM in** (5 V, from CN2 ctrl-side) | → **10 kΩ series** → node **X** |
 | **node X** (divided+filtered) | → 10 kΩ → GND · → 1 µF → GND · → **ESP `GPIO3`** |
-| **ESP `GPIO4`** (3.3 V PWM) | → 74AHCT125 **1A (pin2)** |
-| **74AHCT125 1Y (pin3)** (5 V PWM) | → **100 Ω** → **PWM-motor** (to driver) ; PWM-motor → **10 kΩ → GND** |
+| **ESP `GPIO4`** (3.3 V PWM) | → 74HC125 **1A (pin 2)** |
+| **74HC125 1Y (pin 3)** (5 V PWM) | → **100 Ω** → **PWM-motor** (to driver) ; PWM-motor → **10 kΩ → GND** |
 | **ESP `GPIO5`** | → **330 Ω** → PC817 **pin1** (LED anode) |
 | **PC817 pin3/pin4** (transistor) | across the **SW5** button pads (pin4=collector→MCU-side, pin3=emitter→GND-side; swap if it doesn't trigger) |
-| unused 74AHCT125 inputs | tie **pins 4, 10, 13 (2A/3A/4A) and 6/8/12 OEs** per datasheet — simplest: tie all unused inputs to **GND** |
+| unused 74HC125 channels (2,3,4) | **disable** them: tie **OE pins 4, 10, 13 → +5 V** (HIGH = output off), and tie **unused inputs 5, 9, 12 → GND** (don't leave CMOS inputs floating). Pinout: OE=1/4/10/13, A=2/5/9/12, Y=3/6/8/11, GND=7, Vcc=14. |
 
 ### Off-board wires (to the Zone 4 header)
 1. **PWM-ctrl** — from the cut `CN2` PWM (control-board side)
@@ -327,7 +327,7 @@ wired to the board's rails. (Your **PC817 is DIP-4** — it plugs straight into 
 *(OSC-A/OSC-B stay in the fan harness — they do **not** come to this board.)*
 
 > Keep the ESP on **female headers** so it stays removable/reflashable. Verify the
-> buck is set to **5.0 V** before connecting anything. One common ground throughout.
+> buck is set to **~4.4 V** (74HC125 needs the 3.3 V GPIO to clear its HIGH threshold; see §2d) before connecting anything. One common ground throughout.
 
 ## 2f. Where to use wire vs. heatshrink
 
@@ -338,7 +338,7 @@ inline fuse, inline resistor, off-board run) gets **heatshrink on each joint**.
 ### Hook-up wire
 **Solid-core (26-28 AWG) — on the perfboard** (the jumpers the board can't make
 itself; the dashed "back-side" links in the footprint diagram):
-- `GPIO4 -> 74AHCT125 1A`
+- `GPIO4 -> 74HC125 1A (pin 2)`
 - `node X (divider) -> GPIO3`
 - `GPIO5 -> 330 ohm -> PC817`
 - `1Y -> 100 ohm -> PWM-motor`, and the `10k pull-down -> GND`
