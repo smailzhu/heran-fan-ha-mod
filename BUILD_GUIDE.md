@@ -19,7 +19,7 @@ buttons · §6 optional.
 **Design in one line:** ESP32-C3 takes over **speed** by driving the motor
 driver's **5 V logic PWM** (MCU rail measured 5 V — via a level shifter), and controls
 **oscillation** by "tapping"
-the stock **SW5 (摇头)** button through an optocoupler (the stock board keeps
+the stock **SW5** (oscillation / 摇头) button through an optocoupler (the stock board keeps
 generating the AC the synchronous oscillation motor needs).
 
 Measurements this relies on (multimeter DC averages — logic level/frequency still to confirm on your unit):
@@ -73,7 +73,7 @@ through so the stock board still powers the motor and drives oscillation.
 | `GPIO4` | 100 Ω → `CN2` `PWM` (**motor side**) |
 | `GPIO5` | 330 Ω → PC817 pin 1 (LED anode) |
 
-### Table C — PC817 optocoupler across the SW5 (摇头) button
+### Table C — PC817 optocoupler across the SW5 (oscillation) button
 | PC817 pin | To |
 |----------:|----|
 | 1 (LED anode) | ESP `GPIO5` via 330 Ω |
@@ -152,7 +152,7 @@ flowchart LR
     subgraph FAN["Fan — stock parts"]
         PWR["Power board<br/>mains &rarr; 24 V"]
         CTRL["Control board<br/>MCU + buttons"]
-        SW5["SW5 button<br/>(oscillation / 摇头)"]
+        SW5["SW5 button<br/>(oscillation)"]
         DRV["In-motor driver<br/>FK-EGP00962 &rarr; motor"]
         OSC["Osc motor<br/>TYJ50-8 (24 V~)"]
     end

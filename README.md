@@ -49,7 +49,7 @@ command on `CN2` and drives a **24 V AC synchronous** oscillation motor on
   **mirrors** the stock board (physical buttons still work). When you set a speed
   in Home Assistant it **overrides**; a physical button press hands control back.
 - **Oscillation** → left to the stock board (it generates the AC the synchronous
-  motor needs); the ESP just **taps the 摇头/SW5 button** through an optocoupler.
+  motor needs); the ESP just **taps the SW5 (oscillation) button** through an optocoupler.
 
 Full teardown + measurements: **[HA_MOD_NOTES.md](HA_MOD_NOTES.md)**.
 Wiring + parts: **[BUILD_GUIDE.md](BUILD_GUIDE.md)**.
@@ -94,7 +94,7 @@ Full bill of materials: [BUILD_GUIDE.md §1](BUILD_GUIDE.md).
    - `GND` common to the ESP; `+24V` → **fuse** → **buck** → set buck to **5.0 V**
      → ESP `5V` pin.
    - `OSC-A/OSC-B` pass through untouched.
-   - **PC817** across the **SW5 (摇头)** button pads; LED side ← **GPIO5** (330 Ω).
+   - **PC817** across the **SW5** button pads; LED side ← **GPIO5** (330 Ω).
 8. Double-check: one common ground; buck verified at **5.0 V** before connecting
    the ESP; the cut control-side wires are insulated.
 

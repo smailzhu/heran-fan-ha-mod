@@ -107,7 +107,7 @@ OSCILLATION  (CN2 pins 4/5, OSC-A/OSC-B = the TYJ50-8 coil, ~80 Ω)
   AC field. It will NOT run on DC or arbitrary PWM (hums/overheats/stalls).
   From the 24 V DC bus the stock board *synthesizes* that AC across A–B.
    -> PREFERRED: leave oscillation to the stock board; toggle it by injecting the
-      摇头/SW5 button (optocoupler). No AC synthesis needed. (hybrid, see below)
+      SW5 (oscillation) button (optocoupler). No AC synthesis needed. (hybrid, see below)
    -> FULL takeover: reproduce a *symmetric* ~50/60 Hz square-wave AC (full
       H-bridge, ~0 V DC offset) at the measured Vrms/frequency.
   measure AC-V (~24 Vrms), Hz (~50/60), DC-V (~0) across A–B first.
@@ -119,7 +119,7 @@ load path), fall back to button+LED injection (Section 3a).
 > **Recommended split (given oscillation needs AC):** the *speed* side is trivial
 > to take over (3-wire logic PWM), but the *oscillation* side needs true ~50/60 Hz
 > AC synthesis. Easiest robust design = **ESP owns speed (drive `PWM` directly) +
-> reuse the stock board for oscillation** by tapping the `摇头/SW5` button through
+> reuse the stock board for oscillation** by tapping the `SW5` button through
 > an optocoupler. You get a full HA `fan` + oscillation switch without building an
 > AC drive. Only do full OSC takeover if you remove the control board (Variant C2).
 
@@ -333,7 +333,7 @@ guesswork.
     overheat, locked-rotor). The stock board synthesizes ~50/60 Hz AC across A–B
     from the 24 V DC bus.
   - **Preferred (simplest): don't reproduce the AC** — keep the stock control board
-    driving oscillation and have the ESP **tap the `摇头` (SW5) button** via an
+    driving oscillation and have the ESP **tap the `SW5` (oscillation) button** via an
     optocoupler to toggle it. HA gets an oscillation switch; the stock board does
     the hard AC synthesis.
   - **Full takeover (only if control board removed):** generate a **symmetric
@@ -378,10 +378,10 @@ fan:
 
 # --- OSCILLATION (recommended: reuse stock board via SW5 button tap) ---
 # TYJ50-8 needs true ~50/60 Hz AC; easiest is to let the stock board drive it and
-# just toggle the 摇头/SW5 button through an optocoupler across the switch:
+# just toggle the SW5 (oscillation) button through an optocoupler across the switch:
 switch:
   - platform: gpio
-    pin: GPIO5                # -> optocoupler across SW5 (摇头) on the control board
+    pin: GPIO5                # -> optocoupler across SW5 (oscillation) on the control board
     name: "Fan Oscillation"
     # If SW5 is a momentary toggle, pulse it (on_turn_on/off) instead of a level.
 #
