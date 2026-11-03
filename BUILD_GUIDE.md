@@ -89,17 +89,20 @@ through so the stock board still powers the motor and drives oscillation.
 
 ### ASCII overview
 ```
- POWER BOARD (24V) ──CN1──► CONTROL/DISPLAY BOARD (head) ──┐
-                                    │  SW5 (摇头) pads ──[PC817 3/4]
-                                    │                        ▲
-                           CN2 harness (to motor)            │ opto
-   pin1 PWM ─✂─ ctrl side ──[RC 10kΩ+1µF]──► GPIO3 (ADC)     │
-        motor side ──100Ω──► GPIO4 ;  motor side ──10kΩ──► GND │
-   pin2 GND ───────────────┬──► ESP GND ──────[PC817 2]──────┘
-   pin3 +24V ──[fuse]──► [24V→5V buck] ──5V──► ESP 5V
-   pin4 OSC-A ─────────► (through to TYJ50-8, stock-driven)
-   pin5 OSC-B ─────────► (through to TYJ50-8, stock-driven)
-                           GPIO5 ──330Ω──► [PC817 1]
+POWER BOARD (24V) --CN1--> CONTROL/DISPLAY BOARD (head) --CN2--> (motor harness)
+
+CN2 pin   signal   cut?   routing
+-------   ------   ----   ------------------------------------------------
+  1       PWM      CUT    ctrl side --[10k + 1uF RC]--> GPIO3 (ADC, mirror in)
+                          motor side <--[100R]-- 74HC125 <-- GPIO4
+                          motor side --[10k]--> GND (fail-safe pulldown)
+  2       GND       -     --> ESP GND (one common ground)
+  3       +24V      -     --[fuse]--> [24->5V buck] --> ESP 5V
+  4       OSC-A     no    pass through to TYJ50-8 (stock-driven oscillation)
+  5       OSC-B     no    pass through to TYJ50-8 (stock-driven oscillation)
+
+Oscillation: GPIO5 --[330R]--> PC817 pin1 ; PC817 pin2 --> GND ;
+             PC817 pins 3/4 --> across the SW5 (oscillation) button pads
 ```
 
 ---
